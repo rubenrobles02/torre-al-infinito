@@ -415,6 +415,7 @@
     <div class="stripes"></div>
     <div class="card-body">
       <div class="shop-head"><h2>OBREROS</h2><div class="pill"><i class="coin"></i><span id="shopCoins">0</span></div></div>
+      <button class="btn ghost" type="button" id="testCoins">+50 MONEDAS (PRUEBA)</button>
       <div class="skins" id="skinList"></div>
       <p class="shop-note">Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.</p>
       <button class="btn" type="button" id="shopBack">VOLVER</button>
@@ -1768,6 +1769,7 @@ function resetTower() {
   if (falling) { scene.remove(falling.m); falling = null; }
   if (hanging) { hookGroup.remove(hanging); hanging = null; }
   level = 0; combo = 0; zoneIdx = 0; runCoins = 0;
+  trolley.set(0, 0); trolleyV.set(0, 0); bob.set(0, 0); bobV.set(0, 0);
   coinFx.forEach(c => { scene.remove(c.m); c.m.material.dispose(); }); coinFx.length = 0;
   top = { x: 0, z: 0, w: BASE, d: BASE, mesh: null };
   cur = { w: BASE, d: BASE };
@@ -2004,6 +2006,7 @@ function closeOptions() { showOnly(optionsReturn); focusFirst($(optionsReturn));
 $('mPlay').addEventListener('click', startIntro);
 $('mShop').addEventListener('click', openShop);
 $('shopBack').addEventListener('click', closeShop);
+$('testCoins').addEventListener('click', () => { profile.coins += 50; saveProfile(); tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06); renderShop(); }); // TEMPORAL: quitar antes de publicar
 $('mOptions').addEventListener('click', () => { audio(); sfx.click(); openOptions('titleScreen'); });
 $('mExit').addEventListener('click', () => { sfx.click(); $('mainMenu').hidden = true; $('exitConfirm').hidden = false; focusFirst($('exitConfirm')); });
 $('exitNo').addEventListener('click', () => { $('exitConfirm').hidden = true; $('mainMenu').hidden = false; focusFirst($('mainMenu')); });
@@ -2186,6 +2189,9 @@ function update(dt) {
       const ax = -PEND_K * (bob.x - trolley.x) - damp * (bobV.x - trolleyV.x) + windX;
       const az = -PEND_K * (bob.y - trolley.y) - damp * (bobV.y - trolleyV.y) + windZ;
       bobV.x += ax * h; bobV.y += az * h; bob.x += bobV.x * h; bob.y += bobV.y * h;
+    }
+    if (![trolley.x, trolley.y, bob.x, bob.y, trolleyV.x, bobV.x].every(Number.isFinite)) {
+      trolley.set(0, 0); trolleyV.set(0, 0); bob.set(0, 0); bobV.set(0, 0);
     }
   }
   craneY += (level - craneY) * ease(6);
@@ -2506,7 +2512,7 @@ goTitle();
 camPos.set(24, 7.5, 18);
 let last = performance.now();
 function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  const dt = clamp((now - last) / 1000, 0, 0.05); last = now; // rAF time can be earlier than the boot timestamp
   update(dt);
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
