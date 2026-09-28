@@ -104,7 +104,7 @@
   .switch input:focus-visible + span { outline: 3px solid var(--hazard); outline-offset: 3px; }
   input[type="range"] { width: 100%; accent-color: var(--hazard); }
 
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); }
   .stats div { background: var(--asphalt-2); padding: 10px 10px 12px; display: grid; gap: 4px; align-content: start; }
   .stats span { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--steel); }
   .stats strong { font-family: var(--display); font-weight: 400; font-size: 20px; line-height: 1.1; overflow-wrap: anywhere; }
@@ -224,6 +224,44 @@
   #viewBar span { font-size: 17px; font-weight: 600; color: #dcd9cd; flex: 1 1 200px; }
   #viewBar .btn { font-size: 16px; padding: 10px 14px; }
   #flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 45%, #ffffff 0%, #ff8af7 35%, #6a2bff 75%, #12002e 100%); }
+  .coin {
+    display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: -2px; flex: none;
+    background: radial-gradient(circle at 35% 30%, #fff6c4 0 18%, #ffc21a 45%, #c48a0c 100%);
+    box-shadow: inset 0 0 0 2px #a8740a;
+  }
+  .coins { display: flex; align-items: center; gap: 6px; }
+  .coins b { margin-left: 0 !important; }
+  #coinPop {
+    position: fixed; right: 18px; top: calc(env(safe-area-inset-top, 0px) + 120px); pointer-events: none; opacity: 0;
+    font-family: var(--display); font-size: 22px; color: var(--hazard); text-shadow: 0 2px 0 #000; white-space: nowrap;
+  }
+  #coinPop small { font-family: var(--body); font-weight: 700; font-size: 16px; color: var(--paper); margin-left: 6px; }
+  #coinPop.show { animation: coinpop 1.1s ease-out forwards; }
+  @keyframes coinpop { 0% { opacity: 0; transform: translateY(14px); } 15% { opacity: 1; transform: translateY(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
+
+  /* ---------- Worker shop ---------- */
+  #shopScreen { background: transparent; place-items: center end; padding-right: max(16px, 4vw); }
+  #shopScreen .card { width: min(420px, 100%); max-height: 100%; overflow-y: auto; }
+  .shop-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .pill { display: flex; align-items: center; gap: 8px; background: var(--asphalt-2); padding: 6px 12px; font-family: var(--display); font-size: 20px; color: var(--hazard); }
+  .pill .coin { width: 20px; height: 20px; }
+  .skins { display: grid; gap: 8px; }
+  .skin {
+    display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; cursor: pointer;
+    background: var(--asphalt-2); padding: 8px 10px 8px 8px; border-left: 5px solid transparent; text-align: left; border-top: 0; border-right: 0; border-bottom: 0;
+  }
+  .skin[aria-current="true"] { border-left-color: var(--hazard); background: #2a2d35; }
+  .skin svg { width: 64px; height: 64px; display: block; background: #15161a; }
+  .skin b { display: block; font-size: 20px; font-weight: 700; letter-spacing: .02em; }
+  .skin small { display: block; font-size: 15px; color: var(--steel); line-height: 1.25; }
+  .skin .act { font-family: var(--display); font-size: 14px; padding: 8px 10px; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tag-on { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .14em; color: var(--hazard); white-space: nowrap; }
+  .shop-note { margin: 0; font-size: 16px; color: var(--steel); line-height: 1.35; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+  @media (max-width: 640px) {
+    #shopScreen { place-items: end center; padding-right: 16px; }
+    #shopScreen .card { max-height: 58vh; }
+  }
   #fade { position: fixed; inset: 0; background: #0b0c0f; pointer-events: none; opacity: 1; transition: opacity .8s ease; }
   #fade.out { opacity: 0; }
   @media (prefers-reduced-motion: reduce) {
@@ -244,6 +282,7 @@
   </div>
   <div class="hud-right">
     <div class="best">RÉCORD<b id="best">0</b></div>
+    <div class="best coins" aria-label="Monedas"><i class="coin"></i><b id="coinNum">0</b></div>
     <div class="icons">
       <button id="mute" class="ibtn" type="button" aria-label="Silenciar sonido"></button>
       <button id="pauseBtn" class="ibtn" type="button" aria-label="Pausa"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="6" y="5" width="4" height="14" fill="currentColor"/><rect x="14" y="5" width="4" height="14" fill="currentColor"/></svg></button>
@@ -272,6 +311,7 @@
     <h1><span class="y">TORRE</span><span class="s">AL INFINITO</span></h1>
     <nav class="menu-list" id="mainMenu" aria-label="Menú principal">
       <button class="mbtn" type="button" id="mPlay">Jugar</button>
+      <button class="mbtn" type="button" id="mShop">Obreros</button>
       <button class="mbtn" type="button" id="mOptions">Opciones</button>
       <button class="mbtn" type="button" id="mExit">Salir</button>
     </nav>
@@ -279,7 +319,7 @@
       <p>¿Seguro que quieres salir del juego?</p>
       <div class="row"><button class="btn" type="button" id="exitYes">Sí, salir</button><button class="btn ghost" type="button" id="exitNo">Cancelar</button></div>
     </div>
-    <div class="foot">RÉCORD<b id="titleBest">0</b>PLANTAS</div>
+    <div class="foot coins">RÉCORD<b id="titleBest">0</b>PLANTAS · <i class="coin"></i><b id="titleCoins">0</b></div>
   </div>
 </div>
 
@@ -347,6 +387,7 @@
         <div><span>PLANTAS</span><strong id="oFloors">0</strong></div>
         <div><span>ALTITUD</span><strong id="oAlt" class="small">0 m</strong></div>
         <div><span>ZONA</span><strong id="oZone" class="small">Ciudad</strong></div>
+        <div><span>MONEDAS</span><strong id="oCoins" class="coins">+0</strong></div>
       </div>
       <div class="record" id="oRecord">RÉCORD <b>0</b></div>
       <div class="stack">
@@ -368,6 +409,18 @@
   </div>
 </div>
 
+<div id="coinPop"></div>
+<div class="overlay" id="shopScreen" hidden>
+  <div class="card">
+    <div class="stripes"></div>
+    <div class="card-body">
+      <div class="shop-head"><h2>OBREROS</h2><div class="pill"><i class="coin"></i><span id="shopCoins">0</span></div></div>
+      <div class="skins" id="skinList"></div>
+      <p class="shop-note">Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.</p>
+      <button class="btn" type="button" id="shopBack">VOLVER</button>
+    </div>
+  </div>
+</div>
 <div id="viewBar" hidden><span>Arrastra para girar y subir o bajar · rueda o pellizca para acercar</span><button class="btn" type="button" id="viewBack">VER RESULTADOS</button></div>
 <div id="flash"></div>
 <div id="fade"></div>
@@ -461,6 +514,12 @@ try { Object.assign(settings, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
 let best = 0;
 try { best = parseInt(localStorage.getItem('torre-infinito-best') || '0', 10) || 0; } catch (e) { best = 0; }
+const PROFILE_KEY = 'torre-infinito-profile';
+const profile = { coins: 0, owned: ['clasico'], skin: 'clasico' };
+try { Object.assign(profile, JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}')); } catch (e) { /* ignore */ }
+if (!Array.isArray(profile.owned)) profile.owned = ['clasico'];
+function saveProfile() { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch (e) { /* ignore */ } }
+let runCoins = 0;
 
 /* =========================================================
    Renderer, scene, camera, lights
@@ -974,9 +1033,18 @@ function makePerson(o) {
   const nose = sph(0.022, skin, 8, 6); nose.position.set(0, -0.005, 0.118); head.add(nose);
   [-1, 1].forEach(s => { const e = sph(0.014, dark, 8, 6); e.position.set(0.042 * s, 0.025, 0.106); head.add(e); const ear = sph(0.025, skin, 8, 6); ear.position.set(0.118 * s, 0, 0); head.add(ear); });
   if (o.mustache) { const mu = box(0.08, 0.02, 0.02, std('#3b2a20', 0.9)); mu.position.set(0, -0.042, 0.112); head.add(mu); }
-  const hel = new THREE.Mesh(new THREE.SphereGeometry(0.138, 22, 10, 0, Math.PI * 2, 0, Math.PI / 2), helmet); hel.position.y = 0.035; head.add(hel);
-  const brim = cyl(0.16, 0.16, 0.018, helmet, 22); brim.scale.z = 1.12; brim.position.set(0, 0.036, 0.025); head.add(brim);
-  const ridge = box(0.03, 0.03, 0.26, helmet); ridge.position.y = 0.168; head.add(ridge);
+  const hardhat = new THREE.Group(); head.add(hardhat);
+  const hel = new THREE.Mesh(new THREE.SphereGeometry(0.138, 22, 10, 0, Math.PI * 2, 0, Math.PI / 2), helmet); hel.position.y = 0.035; hardhat.add(hel);
+  const brim = cyl(0.16, 0.16, 0.018, helmet, 22); brim.scale.z = 1.12; brim.position.set(0, 0.036, 0.025); hardhat.add(brim);
+  const ridge = box(0.03, 0.03, 0.26, helmet); ridge.position.y = 0.168; hardhat.add(ridge);
+  // astronaut gear (hidden unless that skin is worn)
+  const astro = new THREE.Group(); astro.visible = false; torso.add(astro);
+  const domeMat = new THREE.MeshStandardMaterial({ color: C('#cfe8ff'), transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, depthWrite: false });
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 18), domeMat); dome.position.y = 0.8; astro.add(dome);
+  const collar = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.035, 10, 24), std('#b9c0c8', 0.4, 0.6)); collar.rotation.x = Math.PI / 2; collar.position.y = 0.64; astro.add(collar);
+  const pack = box(0.34, 0.42, 0.15, std('#eceff2', 0.6)); pack.position.set(0, 0.36, -0.2); astro.add(pack);
+  [-0.09, 0.09].forEach(x => { const t = cyl(0.045, 0.045, 0.34, std('#9aa3ad', 0.3, 0.8), 12); t.position.set(x, 0.38, -0.29); astro.add(t); });
+  const badge = box(0.1, 0.06, 0.01, std('#2f6fb3', 0.5)); badge.position.set(0.09, 0.45, 0.14); astro.add(badge);
   const armL = new THREE.Group(); armL.position.set(-0.25, 0.56, 0); torso.add(armL);
   { const u = cyl(0.056, 0.048, 0.6, shirt); u.position.y = -0.3; armL.add(u); const g = sph(0.058, glove); g.position.y = -0.63; armL.add(g); }
   const armR = new THREE.Group(); armR.position.set(0.25, 0.56, 0); torso.add(armR);
@@ -987,7 +1055,7 @@ function makePerson(o) {
   }
   root.traverse(m => { if (m.isMesh) m.castShadow = true; });
   root.scale.setScalar(0.7);
-  return { root, hips, legs, torso, head, armL, armR, phase: 0, walk: 0 };
+  return { root, hips, legs, torso, head, armL, armR, phase: 0, walk: 0, hardhat, astro, mats: { shirt, pants, vest, refl, helmet, glove } };
 }
 function poseWalk(p) {
   const s = Math.sin(p.phase), w = p.walk;
@@ -997,6 +1065,23 @@ function poseWalk(p) {
   p.torso.rotation.y = s * 0.06 * w;
 }
 const worker = makePerson({ shirt: '#34495f', vest: '#ff6a1a', helmet: '#ffc21a' });
+const SKINS = [
+  { id: 'clasico', name: 'Obrero clásico', desc: 'Chaleco naranja y casco amarillo. El de toda la vida.', price: 0,
+    shirt: '#34495f', pants: '#2e4468', vest: '#ff6a1a', refl: '#e3e9ec', helmet: '#ffc21a', glove: '#8a6a3a' },
+  { id: 'dorado', name: 'Leyenda dorada', desc: 'Casco y chaleco de oro para los que no fallan.', price: 50,
+    shirt: '#1d1f24', pants: '#24262c', vest: '#d9a92e', refl: '#1d1f24', helmet: '#f2c94c', glove: '#1d1f24', metal: true },
+  { id: 'astronauta', name: 'Astronauta', desc: 'Traje espacial con escafandra y mochila de oxígeno.', price: 100,
+    shirt: '#eceff2', pants: '#e3e6ea', vest: '#eceff2', refl: '#2f6fb3', helmet: '#eceff2', glove: '#cfd4da', astro: true },
+];
+function applySkin(pp, sk) {
+  const m = pp.mats;
+  m.shirt.color.copy(C(sk.shirt)); m.pants.color.copy(C(sk.pants)); m.glove.color.copy(C(sk.glove));
+  m.vest.color.copy(C(sk.vest)); m.refl.color.copy(C(sk.refl)); m.helmet.color.copy(C(sk.helmet));
+  m.vest.metalness = sk.metal ? 0.85 : 0; m.vest.roughness = sk.metal ? 0.28 : 0.7;
+  m.helmet.metalness = sk.metal ? 0.9 : 0; m.helmet.roughness = sk.metal ? 0.2 : 0.35;
+  m.refl.emissive.copy(C(sk.refl === '#e3e9ec' ? '#2a2f33' : '#000000'));
+  pp.hardhat.visible = !sk.astro; pp.astro.visible = !!sk.astro;
+}
 const foreman = makePerson({ shirt: '#e8edf0', vest: '#c9e43a', helmet: '#f6f6f2', pants: '#4a4c52', clipboard: true, mustache: true, skin: '#c98e68' });
 scene.add(worker.root); scene.add(foreman.root);
 foreman.root.position.set(FOREMAN.x, GROUND, FOREMAN.y);
@@ -1579,6 +1664,7 @@ function land() {
     combo = 0;
     if (cut) sfx.cut();
   }
+  awardCoins(perfect);
   const cap = capSize(level);
   cur = { w: Math.min(top.w, cap), d: Math.min(top.d, cap) };
   spawnTimer = 0.32;
@@ -1624,6 +1710,41 @@ function knockWorker() { // the worker loses balance and falls off the platform
   worker.fall = { delay: 0.55, v: new THREE.Vector3(2.4, 5, rand(-0.6, 0.6)), w: new THREE.Vector3(rand(2.5, 4.5), 0, rand(-2, 2)), landed: false };
   setTimeout(() => { if (state === 'over') { setLiftHealth(-1); sfx.scream(); } }, 500);
 }
+// Coins: the higher you build, the more valuable the coin that pops out; perfect streaks multiply it.
+const COIN_TYPES = [
+  { name: 'bronce', value: 1, color: '#c8864a' },
+  { name: 'plata', value: 2, color: '#d9dde3' },
+  { name: 'oro', value: 5, color: '#ffcf3a' },
+  { name: 'diamante', value: 10, color: '#7fe7ff' },
+];
+const COIN_ODDS = [[15, [1, 0, 0, 0]], [40, [0.65, 0.35, 0, 0]], [80, [0.2, 0.5, 0.3, 0]], [DIM_LV, [0, 0.35, 0.5, 0.15]], [Infinity, [0, 0, 0.6, 0.4]]];
+function rollCoin(lv) {
+  const odds = COIN_ODDS.find(([max]) => lv < max)[1];
+  let r = Math.random();
+  for (let i = 0; i < odds.length; i++) { if ((r -= odds[i]) <= 0) return COIN_TYPES[i]; }
+  return COIN_TYPES[0];
+}
+const coinFx = [];
+const coinGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.07, 32), gemGeo = new THREE.OctahedronGeometry(0.32, 0);
+function awardCoins(perfect) {
+  if (godUsed) return;
+  const type = rollCoin(level), mult = perfect ? Math.min(10, Math.max(1, combo)) : 1, gain = type.value * mult;
+  profile.coins += gain; runCoins += gain; saveProfile();
+  const mat = new THREE.MeshStandardMaterial({ color: C(type.color), metalness: type.name === 'diamante' ? 0.3 : 0.95, roughness: 0.2, emissive: C(type.color), emissiveIntensity: 0.25, transparent: true });
+  const m = new THREE.Mesh(type.name === 'diamante' ? gemGeo : coinGeo, mat);
+  if (type.name !== 'diamante') m.rotation.x = Math.PI / 2;
+  m.position.set(top.x, level + 0.5, top.z); scene.add(m);
+  coinFx.push({ m, t: 0 });
+  const el = $('coinPop');
+  el.innerHTML = `+${gain}` + (mult > 1 ? `<small>${type.value} × ${mult}</small>` : type.value > 1 ? `<small>${type.name}</small>` : '');
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06);
+  if (type.value >= 5) tone(2637, 0.18, 'triangle', 0.05, 0, 0.12);
+  updateCoinsUi();
+}
+function updateCoinsUi() {
+  $('coinNum').textContent = profile.coins; $('titleCoins').textContent = profile.coins; $('shopCoins').textContent = profile.coins;
+}
 function gameOver() {
   state = 'over'; combo = 0;
   overT = 0; viewing = false; orbitYaw = 0; viewZoom = 1; viewY = level * 0.5 + 1.5;
@@ -1636,6 +1757,7 @@ function gameOver() {
   $('oFloors').textContent = level;
   $('oAlt').textContent = altText(level);
   $('oZone').textContent = ZONES[zoneIdx].name;
+  $('oCoins').innerHTML = godUsed ? '—' : `<i class="coin"></i>+${runCoins}`;
   $('oRecord').innerHTML = isRecord ? `RÉCORD <b>${best}</b><span class="newrec">¡NUEVO RÉCORD!</span>` : `RÉCORD <b>${best}</b>` + (godUsed ? ' · partida con modo dios' : '');
   setTimeout(() => { if (state === 'over' && !viewing) { $('overScreen').hidden = false; focusFirst($('overScreen')); } }, 3600);
 }
@@ -1645,7 +1767,8 @@ function resetTower() {
   rings.forEach(r => scene.remove(r.m)); rings.length = 0; pops.length = 0;
   if (falling) { scene.remove(falling.m); falling = null; }
   if (hanging) { hookGroup.remove(hanging); hanging = null; }
-  level = 0; combo = 0; zoneIdx = 0;
+  level = 0; combo = 0; zoneIdx = 0; runCoins = 0;
+  coinFx.forEach(c => { scene.remove(c.m); c.m.material.dispose(); }); coinFx.length = 0;
   top = { x: 0, z: 0, w: BASE, d: BASE, mesh: null };
   cur = { w: BASE, d: BASE };
   setLiftHealth(1, true);
@@ -1719,8 +1842,64 @@ let boardT = 0;
 let introSeen = false;
 try { introSeen = localStorage.getItem('torre-infinito-intro-seen') === '1'; } catch (e) { /* ignore */ }
 
+let shopOpen = false, previewSkin = 'clasico';
+const skinById = id => SKINS.find(k => k.id === id) || SKINS[0];
+function portrait(sk) {
+  const hat = sk.astro
+    ? `<circle cx="32" cy="22" r="13" fill="rgba(207,232,255,.25)" stroke="#cfe8ff" stroke-width="2"/>`
+    : `<path d="M20 20a12 12 0 0 1 24 0z" fill="${sk.helmet}"/><rect x="17" y="19" width="30" height="3" rx="1.5" fill="${sk.helmet}"/>`;
+  const shine = sk.metal ? `<path d="M26 34l4 0-6 22-4 0z" fill="rgba(255,255,255,.35)"/>` : '';
+  return `<svg viewBox="0 0 64 64" aria-hidden="true">
+    <rect x="14" y="34" width="36" height="30" rx="6" fill="${sk.shirt}"/>
+    <rect x="18" y="34" width="28" height="30" rx="4" fill="${sk.vest}"/>
+    <rect x="18" y="44" width="28" height="3" fill="${sk.refl}"/><rect x="18" y="52" width="28" height="3" fill="${sk.refl}"/>${shine}
+    <circle cx="32" cy="24" r="10" fill="#d29b73"/><circle cx="28.5" cy="24" r="1.3" fill="#1a1a1a"/><circle cx="35.5" cy="24" r="1.3" fill="#1a1a1a"/>
+    ${hat}</svg>`;
+}
+function renderShop() {
+  updateCoinsUi();
+  const list = $('skinList'); list.innerHTML = '';
+  SKINS.forEach(sk => {
+    const owned = profile.owned.includes(sk.id), equipped = profile.skin === sk.id;
+    const row = document.createElement('div');
+    row.className = 'skin'; row.setAttribute('role', 'button'); row.tabIndex = 0;
+    row.setAttribute('aria-current', String(previewSkin === sk.id));
+    row.setAttribute('aria-label', `Probar ${sk.name}`);
+    let action;
+    if (equipped) action = '<span class="tag-on">EQUIPADO</span>';
+    else if (owned) action = '<button class="btn act" type="button">EQUIPAR</button>';
+    else {
+      const short = sk.price - profile.coins;
+      action = `<button class="btn act" type="button" ${short > 0 ? 'disabled' : ''} title="${short > 0 ? `Te faltan ${short} monedas` : 'Comprar'}"><i class="coin"></i>${sk.price}</button>`;
+    }
+    row.innerHTML = `${portrait(sk)}<div><b>${sk.name}</b><small>${sk.desc}</small></div>${action}`;
+    const preview = () => { previewSkin = sk.id; applySkin(worker, sk); sfx.click(); renderShop(); };
+    row.addEventListener('click', preview);
+    row.addEventListener('keydown', e => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); preview(); } });
+    const btn = row.querySelector('button');
+    if (btn) btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!owned) {
+        if (profile.coins < sk.price) return;
+        profile.coins -= sk.price; profile.owned.push(sk.id);
+        [0, 4, 7, 12].forEach((st, i) => tone(523.25 * Math.pow(2, st / 12), 0.2, 'triangle', 0.1, 0, i * 0.07));
+      } else sfx.click();
+      profile.skin = sk.id; previewSkin = sk.id; saveProfile(); applySkin(worker, sk); renderShop();
+    });
+    list.appendChild(row);
+  });
+}
+function openShop() {
+  audio(); sfx.click();
+  shopOpen = true; previewSkin = profile.skin; renderShop();
+  showOnly('shopScreen'); focusFirst($('shopScreen'));
+}
+function closeShop() {
+  shopOpen = false; applySkin(worker, skinById(profile.skin));
+  showOnly('titleScreen'); focusFirst($('titleScreen'));
+}
 function showOnly(id) {
-  ['titleScreen', 'optionsScreen', 'pauseScreen', 'overScreen', 'exitScreen'].forEach(s => { $(s).hidden = s !== id; });
+  ['titleScreen', 'optionsScreen', 'pauseScreen', 'overScreen', 'exitScreen', 'shopScreen'].forEach(s => { $(s).hidden = s !== id; });
 }
 function placeWorkerAtStart() {
   resetWorkerPose();
@@ -1745,6 +1924,7 @@ function goTitle() {
 }
 function startIntro() {
   audio(); sfx.click();
+  runCoins = 0;
   showOnly(null);
   godUsed = settings.god;
   if (settings.skipIntro) { boardDirect(); return; }
@@ -1822,6 +2002,8 @@ function closeOptions() { showOnly(optionsReturn); focusFirst($(optionsReturn));
 
 // menu wiring
 $('mPlay').addEventListener('click', startIntro);
+$('mShop').addEventListener('click', openShop);
+$('shopBack').addEventListener('click', closeShop);
 $('mOptions').addEventListener('click', () => { audio(); sfx.click(); openOptions('titleScreen'); });
 $('mExit').addEventListener('click', () => { sfx.click(); $('mainMenu').hidden = true; $('exitConfirm').hidden = false; focusFirst($('exitConfirm')); });
 $('exitNo').addEventListener('click', () => { $('exitConfirm').hidden = true; $('mainMenu').hidden = false; focusFirst($('mainMenu')); });
@@ -1910,6 +2092,7 @@ window.addEventListener('keydown', e => {
     else if (state === 'playing') pauseGame();
     else if (state === 'paused') resumeGame();
     else if (!$('optionsScreen').hidden) closeOptions();
+    else if (shopOpen) closeShop();
     return;
   }
   if (state !== 'playing') return;
@@ -2043,6 +2226,13 @@ function update(dt) {
       p.m.scale.set(1 + s * 0.04, 1 - s * 0.12, 1 + s * 0.04);
       if (k >= 1) { p.m.scale.set(1, 1, 1); pops.splice(i, 1); }
     }
+    for (let i = coinFx.length - 1; i >= 0; i--) {
+      const c = coinFx[i]; c.t += dt / 1.1;
+      c.m.position.y += dt * 1.6; c.m.rotation.z += dt * 9; c.m.rotation.y += dt * 4;
+      c.m.scale.setScalar(Math.min(1, c.t * 5) * (1 + c.t * 0.4));
+      c.m.material.opacity = 1 - smooth(0.6, 1, c.t);
+      if (c.t >= 1) { scene.remove(c.m); c.m.material.dispose(); coinFx.splice(i, 1); }
+    }
     for (let i = rings.length - 1; i >= 0; i--) {
       const r = rings[i]; r.t += dt * 1.8; const s = 1 + r.t * 0.5;
       r.m.scale.set(r.m.userData.base[0] * s, r.m.userData.base[1] * s, 1);
@@ -2164,7 +2354,10 @@ function update(dt) {
     worker.armR.lookAt(pointAt);
   } else { // title idle
     walkWorker(null, 0, dt);
-    worker.head.rotation.y = Math.sin(time * 0.4) * 0.3;
+    if (shopOpen) {
+      worker.root.rotation.y += angDiff(worker.root.rotation.y, Math.PI + Math.sin(time * 0.6) * 0.8) * ease(3);
+      worker.head.rotation.y *= 0.9;
+    } else worker.head.rotation.y = Math.sin(time * 0.4) * 0.3;
   }
   // foreman
   {
@@ -2200,7 +2393,12 @@ function update(dt) {
   // ---- camera
   const a = camera.aspect, fit = a >= 1 ? 1 : 1 + (1 - a) * 1.3;
   let rate = 3;
-  if (state === 'title' || state === 'exit') {
+  if (state === 'title' && shopOpen) { // close-up of the worker, leaving room for the shop panel
+    const w = worker.root.position;
+    if (a >= 1) { wantLook.set(w.x - 0.9, w.y + 0.65, w.z); wantPos.set(w.x - 0.9, w.y + 1.15, w.z - 3.3); }
+    else { wantLook.set(w.x, w.y - 0.15, w.z); wantPos.set(w.x, w.y + 1.0, w.z - 3.9); }
+    rate = 3;
+  } else if (state === 'title' || state === 'exit') {
     const ang = time * 0.06 + 0.6, R = 27 * (a >= 1 ? 1 : 1.35);
     wantPos.set(Math.cos(ang) * R, 7.5, Math.sin(ang) * R + 4); wantLook.set(0, 3.5, 2);
     rate = 2;
@@ -2302,6 +2500,8 @@ scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : 
 Object.values(FACADES).forEach(m => stdMats.add(m)); [slabMat, neonSlab].forEach(m => stdMats.add(m));
 syncSettingsUi();
 applyQuality();
+applySkin(worker, skinById(profile.skin));
+updateCoinsUi();
 goTitle();
 camPos.set(24, 7.5, 18);
 let last = performance.now();
