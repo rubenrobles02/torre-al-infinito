@@ -1,0 +1,16 @@
+{
+  "appId": "io.github.rubenrobles02.torrealinfinito",
+  "appName": "Torre al Infinito",
+  "webDir": "www",
+  "backgroundColor": "#17181c",
+  "android": {
+    "backgroundColor": "#17181c"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "initialViewportFitValueHint": "cover",
+      "hidden": true
+    }
+  }
+}

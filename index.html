@@ -449,6 +449,9 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+// Running inside the Android app (Capacitor) rather than a browser
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const AppPlugin = NATIVE && window.Capacitor.Plugins ? window.Capacitor.Plugins.App : null;
 const C = hex => new THREE.Color(hex).convertSRGBToLinear();
 
 const BACK = new THREE.Vector2(-Math.SQRT1_2, -Math.SQRT1_2);
@@ -1749,7 +1752,7 @@ function land() {
         grew = true;
       }
     }
-    const rm = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: C('#fff6d0'), transparent: true, opacity: 0.95, depthWrite: false, side: THREE.DoubleSide }));
+    const rm = new THREE.Mesh(ringGeo, ringMatPool[ringMatIdx++ % ringMatPool.length]); rm.material.opacity = 0.95;
     rm.rotation.x = -Math.PI / 2; rm.position.set(top.x, level + 0.02, top.z);
     rm.userData.base = [top.w / 2 / Math.SQRT1_2, top.d / 2 / Math.SQRT1_2];
     scene.add(rm); rings.push({ m: rm, t: 0 });
@@ -1822,12 +1825,18 @@ function rollCoin(lv) {
   return COIN_TYPES[0];
 }
 const coinFx = [];
+// Reused materials: disposing a material also frees its compiled shader, and compiling it again
+// on the next hit froze the game for a moment on phones.
+const coinMatPool = Array.from({ length: 6 }, () => new THREE.MeshStandardMaterial({ color: C('#ffcf3a'), metalness: 0.95, roughness: 0.2, emissive: C('#ffcf3a'), emissiveIntensity: 0.25, transparent: true }));
+const ringMatPool = Array.from({ length: 4 }, () => new THREE.MeshBasicMaterial({ color: C('#fff6d0'), transparent: true, opacity: 0.95, depthWrite: false, side: THREE.DoubleSide }));
+let coinMatIdx = 0, ringMatIdx = 0;
 const coinGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.07, 32), gemGeo = new THREE.OctahedronGeometry(0.32, 0);
 function awardCoins(perfect) {
   if (godUsed) return;
   const type = rollCoin(level), mult = perfect ? Math.min(10, Math.max(1, combo)) : 1, gain = type.value * mult;
   profile.coins += gain; runCoins += gain; saveProfile();
-  const mat = new THREE.MeshStandardMaterial({ color: C(type.color), metalness: type.name === 'diamante' ? 0.3 : 0.95, roughness: 0.2, emissive: C(type.color), emissiveIntensity: 0.25, transparent: true });
+  const mat = coinMatPool[coinMatIdx++ % coinMatPool.length];
+  mat.color.copy(C(type.color)); mat.emissive.copy(C(type.color)); mat.metalness = type.name === 'diamante' ? 0.3 : 0.95; mat.opacity = 1;
   const m = new THREE.Mesh(type.name === 'diamante' ? gemGeo : coinGeo, mat);
   if (type.name !== 'diamante') m.rotation.x = Math.PI / 2;
   m.position.set(top.x, level + 0.5, top.z); scene.add(m);
@@ -1872,7 +1881,7 @@ function resetTower() {
   if (hanging) { hookGroup.remove(hanging); hanging = null; }
   level = 0; combo = 0; zoneIdx = 0; runCoins = 0;
   trolley.set(0, 0); trolleyV.set(0, 0); bob.set(0, 0); bobV.set(0, 0);
-  coinFx.forEach(c => { scene.remove(c.m); c.m.material.dispose(); }); coinFx.length = 0;
+  coinFx.forEach(c => scene.remove(c.m)); coinFx.length = 0;
   top = { x: 0, z: 0, w: BASE, d: BASE, mesh: null };
   cur = { w: BASE, d: BASE };
   setLiftHealth(1, true);
@@ -2115,12 +2124,15 @@ function closeOptions() { showOnly(optionsReturn); focusFirst($(optionsReturn));
 $('mPlay').addEventListener('click', startIntro);
 $('mShop').addEventListener('click', openShop);
 $('shopBack').addEventListener('click', closeShop);
-$('testCoins').hidden = /github\.io$/.test(location.hostname); // TEMPORAL: el botón de prueba no sale en la web pública
+$('testCoins').hidden = NATIVE || /github\.io$/.test(location.hostname); // TEMPORAL: el botón de prueba no sale en la web pública
 $('testCoins').addEventListener('click', () => { profile.coins += 50; saveProfile(); tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06); renderShop(); }); // TEMPORAL: quitar antes de publicar
 $('mOptions').addEventListener('click', () => { audio(); sfx.click(); openOptions('titleScreen'); });
 $('mExit').addEventListener('click', () => { sfx.click(); $('mainMenu').hidden = true; $('exitConfirm').hidden = false; focusFirst($('exitConfirm')); });
 $('exitNo').addEventListener('click', () => { $('exitConfirm').hidden = true; $('mainMenu').hidden = false; focusFirst($('mainMenu')); });
-$('exitYes').addEventListener('click', () => { state = 'exit'; hum(false); showOnly('exitScreen'); try { window.close(); } catch (e) { /* ignore */ } });
+$('exitYes').addEventListener('click', () => {
+  if (AppPlugin) { AppPlugin.exitApp(); return; } // the app really closes
+  state = 'exit'; hum(false); showOnly('exitScreen'); try { window.close(); } catch (e) { /* ignore */ }
+});
 $('exitBack').addEventListener('click', goTitle);
 $('optBack').addEventListener('click', closeOptions);
 $('pResume').addEventListener('click', resumeGame);
@@ -2220,6 +2232,29 @@ window.addEventListener('keydown', e => {
   e.preventDefault(); aimed = true;
 });
 window.addEventListener('keyup', e => keys.delete(e.code));
+// Leaving the app or the tab pauses the game and the sound
+function onHidden(hidden) {
+  if (hidden) { if (state === 'playing') pauseGame(); keys.clear(); if (actx && actx.state === 'running') actx.suspend(); }
+  else if (actx && actx.state === 'suspended' && settings.sound) actx.resume();
+}
+document.addEventListener('visibilitychange', () => onHidden(document.hidden));
+// Android back button: behaves like Esc, and from the main menu asks before quitting
+function onBack() {
+  if (!$('optionsScreen').hidden) closeOptions();
+  else if (shopOpen) closeShop();
+  else if (state === 'playing') pauseGame();
+  else if (state === 'paused') resumeGame();
+  else if (state === 'over') { if (viewing) $('viewBack').click(); else goTitle(); }
+  else if (state === 'intro' || state === 'talk' || state === 'walk' || state === 'board') goTitle();
+  else if (state === 'title') {
+    if (!$('exitConfirm').hidden) $('exitNo').click();
+    else { $('mainMenu').hidden = true; $('exitConfirm').hidden = false; focusFirst($('exitConfirm')); }
+  } else if (state === 'exit') goTitle();
+}
+if (AppPlugin) {
+  AppPlugin.addListener('backButton', onBack);
+  AppPlugin.addListener('appStateChange', st => onHidden(!st.isActive));
+}
 window.addEventListener('blur', () => keys.clear());
 window.addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
@@ -2348,13 +2383,13 @@ function update(dt) {
       c.m.position.y += dt * 1.6; c.m.rotation.z += dt * 9; c.m.rotation.y += dt * 4;
       c.m.scale.setScalar(Math.min(1, c.t * 5) * (1 + c.t * 0.4));
       c.m.material.opacity = 1 - smooth(0.6, 1, c.t);
-      if (c.t >= 1) { scene.remove(c.m); c.m.material.dispose(); coinFx.splice(i, 1); }
+      if (c.t >= 1) { scene.remove(c.m); coinFx.splice(i, 1); }
     }
     for (let i = rings.length - 1; i >= 0; i--) {
       const r = rings[i]; r.t += dt * 1.8; const s = 1 + r.t * 0.5;
       r.m.scale.set(r.m.userData.base[0] * s, r.m.userData.base[1] * s, 1);
       r.m.material.opacity = Math.max(0, 0.95 * (1 - r.t));
-      if (r.t >= 1) { scene.remove(r.m); r.m.material.dispose(); rings.splice(i, 1); }
+      if (r.t >= 1) { scene.remove(r.m); rings.splice(i, 1); }
     }
   }
 
@@ -2620,6 +2655,13 @@ applyQuality();
 applySkin(worker, skinById(profile.skin));
 updateCoinsUi();
 applyLang();
+{
+  const warm = new THREE.Group();
+  warm.add(new THREE.Mesh(coinGeo, coinMatPool[0]), new THREE.Mesh(gemGeo, coinMatPool[1]), new THREE.Mesh(ringGeo, ringMatPool[0]));
+  scene.add(warm);
+  try { renderer.compile(scene, camera); } catch (e) { /* compiling ahead is only an optimisation */ }
+  scene.remove(warm);
+}
 goTitle();
 camPos.set(24, 7.5, 18);
 let last = performance.now();

@@ -27,3 +27,16 @@ Abre `index.html` en el navegador (ordenador o móvil).
 ## Zonas
 
 Ciudad · Nubes · Ruta de aviones · Estratosfera · Espacio · Luna · Marte · Cinturón de asteroides · Júpiter · Saturno · Neptuno · Vía Láctea · Más allá del infinito
+
+## App de Android
+
+El juego se empaqueta como app con [Capacitor](https://capacitorjs.com/). La guía completa para compilar y publicar en Google Play está en [`store/GUIA-PLAY-STORE.md`](store/GUIA-PLAY-STORE.md).
+
+```
+npm install
+npm run sync          # genera www/ (sin dependencias de internet) y lo copia al proyecto Android
+cd android
+gradlew bundleRelease # AAB firmado para Google Play (necesita android/keystore.properties)
+```
+
+Política de privacidad: https://rubenrobles02.github.io/torre-al-infinito/privacy.html

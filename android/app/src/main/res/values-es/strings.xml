@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Torre al Infinito</string>
+    <string name="title_activity_main">Torre al Infinito</string>
+</resources>

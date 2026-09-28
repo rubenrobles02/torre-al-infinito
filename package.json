@@ -1,0 +1,19 @@
+{
+  "name": "torre-al-infinito",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Torre al Infinito: juego 3D de construir la torre más alta",
+  "scripts": {
+    "build:web": "node scripts/build-www.mjs",
+    "sync": "npm run build:web && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.2"
+  }
+}
