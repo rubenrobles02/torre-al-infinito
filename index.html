@@ -130,8 +130,14 @@
   #dlgText { margin: 0; font-size: 21px; line-height: 1.3; min-height: 2.6em; font-weight: 500; }
   .dlg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .dlg-foot span { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--steel); }
-  #skipBtn { border: 0; background: transparent; color: var(--steel); font-family: var(--mono); font-size: 12px; letter-spacing: .12em; cursor: pointer; padding: 6px 0 6px 10px; }
-  #skipBtn:hover { color: var(--paper); }
+  #skipBtn {
+    position: fixed; right: 16px; top: calc(env(safe-area-inset-top, 0px) + 14px);
+    border: 0; border-radius: 0; cursor: pointer; background: var(--panel); color: var(--paper);
+    font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .14em;
+    padding: 11px 14px; border-right: 4px solid var(--hazard);
+  }
+  #skipBtn:hover { background: var(--hazard); color: #17181c; }
+  @media (max-width: 640px) { #skipBtn { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 170px); } }
   #mission {
     position: fixed; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top, 0px) + 14px);
     background: var(--panel); padding: 8px 14px; display: grid; gap: 2px; text-align: center; pointer-events: none;
@@ -246,8 +252,9 @@
 <div id="dialog" hidden role="dialog" aria-label="Conversación con el encargado">
   <div class="speaker"><b>PACO</b><span>ENCARGADO DE OBRA</span></div>
   <p id="dlgText"></p>
-  <div class="dlg-foot"><span id="dlgMore">TOCA PARA SEGUIR ▸</span><button id="skipBtn" type="button">SALTAR INTRO</button></div>
+  <div class="dlg-foot"><span id="dlgMore">TOCA PARA SEGUIR ▸</span></div>
 </div>
+<button id="skipBtn" type="button" hidden>SALTAR INTRO ▸▸</button>
 <div id="joy" hidden><div id="joyKnob"></div></div>
 
 <!-- Title -->
@@ -985,19 +992,39 @@ const anims = [];
 // soft clouds
 {
   const clouds = new THREE.Group(); scene.add(clouds);
-  const mat = new THREE.SpriteMaterial({ map: cloudTex, color: C('#ffffff'), transparent: true, depthWrite: false, opacity: 0.95 });
+  const list = [];
   for (let i = 0; i < 38; i++) {
     const far = i > 24, cg = new THREE.Group();
+    const mat = new THREE.SpriteMaterial({ map: cloudTex, color: C('#ffffff'), transparent: true, depthWrite: false, opacity: 0.95 });
+    cg.userData.mat = mat;
     const n = 7 + Math.floor(Math.random() * 5);
     for (let j = 0; j < n; j++) {
       const s = new THREE.Sprite(mat); const sc = rand(3.5, 7) * (far ? 3 : 1);
       s.scale.set(sc, sc * 0.62, 1); s.position.set(rand(-4, 4) * (far ? 3 : 1), rand(-0.5, 0.8) * (far ? 2 : 1), rand(-2, 2) * (far ? 3 : 1));
       cg.add(s);
     }
-    const [x, z] = aroundTower(far ? 70 : 12, far ? 150 : 50);
-    cg.position.set(x, rand(4.5, 13), z); clouds.add(cg);
+    let x, z;
+    do { [x, z] = aroundTower(far ? 70 : 14, far ? 150 : 50); } while (!far && x + z > -6); // near clouds only behind the tower
+    cg.position.set(x, rand(4.5, 13), z); cg.userData.home = cg.position.clone(); cg.userData.seed = Math.random() * 100;
+    clouds.add(cg); list.push(cg);
   }
-  anims.push(dt => { clouds.rotation.y += dt * 0.006; });
+  // clouds drift in place and fade out whenever they get between the camera and what it looks at
+  const seg = new THREE.Vector3(), rel = new THREE.Vector3();
+  anims.push((dt, t) => {
+    seg.subVectors(camLook, camera.position);
+    const len2 = seg.lengthSq() || 1;
+    for (const cg of list) {
+      const h = cg.userData.home, sd = cg.userData.seed;
+      cg.position.set(h.x + Math.sin(t * 0.05 + sd) * 3, h.y, h.z + Math.cos(t * 0.04 + sd) * 3);
+      rel.subVectors(cg.position, camera.position);
+      const k = rel.dot(seg) / len2;
+      let fade = 1;
+      if (k > -0.1 && k < 1.3) fade = smooth(4, 11, rel.addScaledVector(seg, -k).length());
+      const m = cg.userData.mat;
+      m.opacity += (0.95 * fade - m.opacity) * Math.min(1, dt * 6);
+      cg.visible = m.opacity > 0.02;
+    }
+  });
 }
 // hot air balloon
 {
@@ -1401,6 +1428,8 @@ const moveTarget = new THREE.Vector2(), keys = new Set();
 let hasMoveTarget = false, stepSide = 0;
 const joy = { active: false, id: null, ox: 0, oy: 0, x: 0, y: 0 };
 let boardT = 0;
+let introSeen = false;
+try { introSeen = localStorage.getItem('torre-infinito-intro-seen') === '1'; } catch (e) { /* ignore */ }
 
 function showOnly(id) {
   ['titleScreen', 'optionsScreen', 'pauseScreen', 'overScreen', 'exitScreen'].forEach(s => { $(s).hidden = s !== id; });
@@ -1417,7 +1446,7 @@ function goTitle() {
   resetTower();
   placeWorkerAtStart();
   liftY = LIFT_GROUND; lift.position.y = liftY;
-  $('hud').hidden = true; $('mission').hidden = true; $('dialog').hidden = true; $('joy').hidden = true; $('hint').hidden = true;
+  $('hud').hidden = true; $('mission').hidden = true; $('skipBtn').hidden = true; $('dialog').hidden = true; $('joy').hidden = true; $('hint').hidden = true;
   marker.visible = false;
   $('exitConfirm').hidden = true; $('mainMenu').hidden = false;
   showOnly('titleScreen');
@@ -1431,6 +1460,9 @@ function startIntro() {
   if (settings.skipIntro) { boardDirect(); return; }
   state = 'intro';
   placeWorkerAtStart();
+  $('skipBtn').hidden = !introSeen; // skipping is offered from the second time on
+  introSeen = true;
+  try { localStorage.setItem('torre-infinito-intro-seen', '1'); } catch (e) { /* ignore */ }
 }
 function startTalk() {
   state = 'talk'; lineIdx = 0; typed = 0; lastTyped = 0;
@@ -1454,6 +1486,7 @@ function beginWalk() {
   hint.hidden = false;
 }
 function skipIntro() {
+  if ($('skipBtn').hidden) return;
   $('dialog').hidden = true;
   boardDirect();
 }
@@ -1464,6 +1497,7 @@ function boardDirect() { // put the worker straight on the lift
 }
 function startBoard() {
   state = 'board'; boardT = 0;
+  $('skipBtn').hidden = true;
   marker.visible = false; $('mission').hidden = true; $('hint').hidden = true; $('joy').hidden = true; joy.active = false;
   hum(true);
 }
@@ -1562,9 +1596,9 @@ canvas.addEventListener('pointerup', e => {
 canvas.addEventListener('pointercancel', endJoy);
 window.addEventListener('keydown', e => {
   const k = e.code;
-  if (state === 'walk') { keys.add(k); if (k.startsWith('Arrow')) e.preventDefault(); hasMoveTarget = false; return; }
+  if (state === 'walk' && k !== 'Escape') { keys.add(k); if (k.startsWith('Arrow')) e.preventDefault(); hasMoveTarget = false; return; }
   if (state === 'talk' && (k === 'Space' || k === 'Enter')) { e.preventDefault(); advanceTalk(); return; }
-  if (state === 'talk' && k === 'Escape') { skipIntro(); return; }
+  if ((state === 'intro' || state === 'talk' || state === 'walk') && k === 'Escape') { skipIntro(); return; }
   if (k === 'Escape') {
     if (state === 'playing') pauseGame();
     else if (state === 'paused') resumeGame();
