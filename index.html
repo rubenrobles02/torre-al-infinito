@@ -94,6 +94,7 @@
   .opt small { font-size: 15px; color: var(--steel); line-height: 1.3; }
   .seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--line); gap: 2px; padding: 2px; }
   .seg button { border: 0; border-radius: 0; background: var(--asphalt-2); padding: 9px 6px; cursor: pointer; font-weight: 700; font-size: 17px; letter-spacing: .04em; color: var(--steel); }
+  .seg2 { grid-template-columns: repeat(2, 1fr); }
   .seg button[aria-pressed="true"] { background: var(--hazard); color: #17181c; }
   .switch { position: relative; width: 58px; height: 30px; flex: none; }
   .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
@@ -275,51 +276,51 @@
 <!-- HUD while building -->
 <div id="hud" hidden>
   <div class="plate">
-    <div class="floors"><span id="floorNum">0</span><small>PLANTAS</small></div>
+    <div class="floors"><span id="floorNum">0</span><small data-i18n="floorsLbl">PLANTAS</small></div>
     <div class="alt" id="alt">ALT 0 m</div>
     <div class="zone" id="zone">Obra · Ciudad</div>
     <div class="wind"><svg id="windArrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="windTxt">Sin viento</span></div>
   </div>
   <div class="hud-right">
-    <div class="best">RÉCORD<b id="best">0</b></div>
-    <div class="best coins" aria-label="Monedas"><i class="coin"></i><b id="coinNum">0</b></div>
+    <div class="best"><span data-i18n="best">RÉCORD</span><b id="best">0</b></div>
+    <div class="best coins" aria-label="Monedas" data-i18n-aria="coins"><i class="coin"></i><b id="coinNum">0</b></div>
     <div class="icons">
       <button id="mute" class="ibtn" type="button" aria-label="Silenciar sonido"></button>
-      <button id="pauseBtn" class="ibtn" type="button" aria-label="Pausa"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="6" y="5" width="4" height="14" fill="currentColor"/><rect x="14" y="5" width="4" height="14" fill="currentColor"/></svg></button>
+      <button id="pauseBtn" class="ibtn" type="button" aria-label="Pausa" data-i18n-aria="pause"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="6" y="5" width="4" height="14" fill="currentColor"/><rect x="14" y="5" width="4" height="14" fill="currentColor"/></svg></button>
     </div>
-    <button id="god" type="button" aria-pressed="false" title="Todas las plantas caen perfectas. Las partidas con modo dios no cuentan para el récord."><i></i>MODO DIOS</button>
+    <button id="god" type="button" aria-pressed="false" data-i18n-title="godTitle" title="Todas las plantas caen perfectas. Las partidas con modo dios no cuentan para el récord."><i></i><span data-i18n="god">MODO DIOS</span></button>
   </div>
 </div>
 <div id="combo"></div>
-<div id="banner"><div class="tag"><span>NUEVA ZONA</span></div><div class="name" id="bannerName"></div><div class="sub" id="bannerSub"></div></div>
+<div id="banner"><div class="tag"><span data-i18n="newZone">NUEVA ZONA</span></div><div class="name" id="bannerName"></div><div class="sub" id="bannerSub"></div></div>
 <div id="hint" hidden></div>
 
 <!-- Intro -->
-<div id="mission" hidden><span>MISIÓN</span><b id="missionTxt">Sube a la plataforma elevadora</b></div>
-<div id="dialog" hidden role="dialog" aria-label="Conversación con el encargado">
-  <div class="speaker"><b>PACO</b><span>ENCARGADO DE OBRA</span></div>
+<div id="mission" hidden><span data-i18n="mission">MISIÓN</span><b id="missionTxt">Sube a la plataforma elevadora</b></div>
+<div id="dialog" hidden role="dialog" aria-label="Conversación con el encargado" data-i18n-aria="dialogAria">
+  <div class="speaker"><b>PACO</b><span data-i18n="foremanRole">ENCARGADO DE OBRA</span></div>
   <p id="dlgText"></p>
-  <div class="dlg-foot"><span id="dlgMore">TOCA PARA SEGUIR ▸</span></div>
+  <div class="dlg-foot"><span id="dlgMore" data-i18n="tapMore">TOCA PARA SEGUIR ▸</span></div>
 </div>
-<button id="skipBtn" type="button" hidden>SALTAR INTRO ▸▸</button>
+<button id="skipBtn" type="button" hidden data-i18n="skip">SALTAR INTRO ▸▸</button>
 <div id="joy" hidden><div id="joyKnob"></div></div>
 
 <!-- Title -->
 <div id="titleScreen">
   <div class="menu">
-    <div class="eyebrow">ORDEN DE OBRA Nº 001 · ALTURA MÁXIMA: SIN LÍMITE</div>
-    <h1><span class="y">TORRE</span><span class="s">AL INFINITO</span></h1>
-    <nav class="menu-list" id="mainMenu" aria-label="Menú principal">
-      <button class="mbtn" type="button" id="mPlay">Jugar</button>
-      <button class="mbtn" type="button" id="mShop">Obreros</button>
-      <button class="mbtn" type="button" id="mOptions">Opciones</button>
-      <button class="mbtn" type="button" id="mExit">Salir</button>
+    <div class="eyebrow" data-i18n="eyebrow">ORDEN DE OBRA Nº 001 · ALTURA MÁXIMA: SIN LÍMITE</div>
+    <h1><span class="y" data-i18n="titleY">TORRE</span><span class="s" data-i18n="titleS">AL INFINITO</span></h1>
+    <nav class="menu-list" id="mainMenu" aria-label="Menú principal" data-i18n-aria="menuAria">
+      <button class="mbtn" type="button" id="mPlay" data-i18n="play">Jugar</button>
+      <button class="mbtn" type="button" id="mShop" data-i18n="workers">Obreros</button>
+      <button class="mbtn" type="button" id="mOptions" data-i18n="options">Opciones</button>
+      <button class="mbtn" type="button" id="mExit" data-i18n="exit">Salir</button>
     </nav>
     <div class="confirm" id="exitConfirm" hidden>
-      <p>¿Seguro que quieres salir del juego?</p>
-      <div class="row"><button class="btn" type="button" id="exitYes">Sí, salir</button><button class="btn ghost" type="button" id="exitNo">Cancelar</button></div>
+      <p data-i18n="exitQ">¿Seguro que quieres salir del juego?</p>
+      <div class="row"><button class="btn" type="button" id="exitYes" data-i18n="exitYes">Sí, salir</button><button class="btn ghost" type="button" id="exitNo" data-i18n="cancel">Cancelar</button></div>
     </div>
-    <div class="foot coins">RÉCORD<b id="titleBest">0</b>PLANTAS · <i class="coin"></i><b id="titleCoins">0</b></div>
+    <div class="foot coins"><span data-i18n="best">RÉCORD</span><b id="titleBest">0</b><span data-i18n="floorsLbl">PLANTAS</span> · <i class="coin"></i><b id="titleCoins">0</b></div>
   </div>
 </div>
 
@@ -328,35 +329,42 @@
   <div class="card">
     <div class="stripes"></div>
     <div class="card-body">
-      <h2>OPCIONES</h2>
+      <h2 data-i18n="optionsH">OPCIONES</h2>
       <div>
         <div class="opt">
-          <div class="opt-head"><span class="lbl">Calidad gráfica</span></div>
-          <div class="seg" id="qualitySeg" role="group" aria-label="Calidad gráfica">
-            <button type="button" data-q="baja" aria-pressed="false">BAJA</button>
-            <button type="button" data-q="media" aria-pressed="false">MEDIA</button>
-            <button type="button" data-q="alta" aria-pressed="false">ALTA</button>
+          <div class="opt-head"><span class="lbl">Idioma · Language</span></div>
+          <div class="seg seg2" id="langSeg" role="group" aria-label="Idioma · Language">
+            <button type="button" data-lang="es" aria-pressed="false">ESPAÑOL</button>
+            <button type="button" data-lang="en" aria-pressed="false">ENGLISH</button>
           </div>
-          <small>Alta activa sombras detalladas y máxima resolución. Si va lento en el móvil, prueba Media o Baja.</small>
         </div>
         <div class="opt">
-          <div class="opt-head"><label for="optSound">Sonido</label><span class="switch"><input type="checkbox" id="optSound"><span></span></span></div>
-          <input type="range" id="optVolume" min="0" max="100" step="5" aria-label="Volumen">
+          <div class="opt-head"><span class="lbl" data-i18n="quality">Calidad gráfica</span></div>
+          <div class="seg" id="qualitySeg" role="group" aria-label="Calidad gráfica" data-i18n-aria="quality">
+            <button type="button" data-q="baja" aria-pressed="false" data-i18n="qLow">BAJA</button>
+            <button type="button" data-q="media" aria-pressed="false" data-i18n="qMed">MEDIA</button>
+            <button type="button" data-q="alta" aria-pressed="false" data-i18n="qHigh">ALTA</button>
+          </div>
+          <small data-i18n="qualityNote">Alta activa sombras detalladas y máxima resolución. Si va lento en el móvil, prueba Media o Baja.</small>
         </div>
         <div class="opt">
-          <div class="opt-head"><label for="optAim">Ayuda de puntería</label><span class="switch"><input type="checkbox" id="optAim"><span></span></span></div>
-          <small>Marca en la torre dónde caerá el bloque. Se pone amarilla cuando está perfecto.</small>
+          <div class="opt-head"><label for="optSound" data-i18n="sound">Sonido</label><span class="switch"><input type="checkbox" id="optSound"><span></span></span></div>
+          <input type="range" id="optVolume" min="0" max="100" step="5" aria-label="Volumen" data-i18n-aria="volume">
         </div>
         <div class="opt">
-          <div class="opt-head"><label for="optGod">Modo dios</label><span class="switch"><input type="checkbox" id="optGod"><span></span></span></div>
-          <small>Todo cae perfecto. Las partidas con modo dios no cuentan para el récord.</small>
+          <div class="opt-head"><label for="optAim" data-i18n="aim">Ayuda de puntería</label><span class="switch"><input type="checkbox" id="optAim"><span></span></span></div>
+          <small data-i18n="aimNote">Marca en la torre dónde caerá el bloque. Se pone amarilla cuando está perfecto.</small>
         </div>
         <div class="opt">
-          <div class="opt-head"><label for="optSkip">Saltar la introducción</label><span class="switch"><input type="checkbox" id="optSkip"><span></span></span></div>
-          <small>Empiezas directamente en la plataforma.</small>
+          <div class="opt-head"><label for="optGod" data-i18n="godOpt">Modo dios</label><span class="switch"><input type="checkbox" id="optGod"><span></span></span></div>
+          <small data-i18n="godNote">Todo cae perfecto. Las partidas con modo dios no cuentan para el récord.</small>
+        </div>
+        <div class="opt">
+          <div class="opt-head"><label for="optSkip" data-i18n="skipOpt">Saltar la introducción</label><span class="switch"><input type="checkbox" id="optSkip"><span></span></span></div>
+          <small data-i18n="skipNote">Empiezas directamente en la plataforma.</small>
         </div>
       </div>
-      <button class="btn" type="button" id="optBack">VOLVER</button>
+      <button class="btn" type="button" id="optBack" data-i18n="back">VOLVER</button>
     </div>
   </div>
 </div>
@@ -366,11 +374,11 @@
   <div class="card">
     <div class="stripes"></div>
     <div class="card-body">
-      <h2>PAUSA</h2>
+      <h2 data-i18n="pauseH">PAUSA</h2>
       <div class="stack">
-        <button class="btn" type="button" id="pResume">CONTINUAR</button>
-        <button class="btn ghost" type="button" id="pOptions">OPCIONES</button>
-        <button class="btn ghost" type="button" id="pMenu">MENÚ PRINCIPAL</button>
+        <button class="btn" type="button" id="pResume" data-i18n="resume">CONTINUAR</button>
+        <button class="btn ghost" type="button" id="pOptions" data-i18n="optionsH">OPCIONES</button>
+        <button class="btn ghost" type="button" id="pMenu" data-i18n="mainMenu">MENÚ PRINCIPAL</button>
       </div>
     </div>
   </div>
@@ -381,19 +389,19 @@
   <div class="card">
     <div class="stripes"></div>
     <div class="card-body">
-      <div class="eyebrow">PARTE DE OBRA · INCIDENCIA</div>
-      <h1><span class="y">OBRA</span><span class="s">DETENIDA</span></h1>
+      <div class="eyebrow" data-i18n="overEyebrow">PARTE DE OBRA · INCIDENCIA</div>
+      <h1><span class="y" data-i18n="overY">OBRA</span><span class="s" data-i18n="overS">DETENIDA</span></h1>
       <div class="stats">
-        <div><span>PLANTAS</span><strong id="oFloors">0</strong></div>
-        <div><span>ALTITUD</span><strong id="oAlt" class="small">0 m</strong></div>
-        <div><span>ZONA</span><strong id="oZone" class="small">Ciudad</strong></div>
-        <div><span>MONEDAS</span><strong id="oCoins" class="coins">+0</strong></div>
+        <div><span data-i18n="statFloors">PLANTAS</span><strong id="oFloors">0</strong></div>
+        <div><span data-i18n="statAlt">ALTITUD</span><strong id="oAlt" class="small">0 m</strong></div>
+        <div><span data-i18n="statZone">ZONA</span><strong id="oZone" class="small">Ciudad</strong></div>
+        <div><span data-i18n="statCoins">MONEDAS</span><strong id="oCoins" class="coins">+0</strong></div>
       </div>
       <div class="record" id="oRecord">RÉCORD <b>0</b></div>
       <div class="stack">
-        <button class="btn" type="button" id="againBtn">VOLVER A CONSTRUIR</button>
-        <button class="btn ghost" type="button" id="viewTower">VER LA TORRE</button>
-        <button class="btn ghost" type="button" id="overMenu">MENÚ PRINCIPAL</button>
+        <button class="btn" type="button" id="againBtn" data-i18n="again">VOLVER A CONSTRUIR</button>
+        <button class="btn ghost" type="button" id="viewTower" data-i18n="viewTower">VER LA TORRE</button>
+        <button class="btn ghost" type="button" id="overMenu" data-i18n="mainMenu">MENÚ PRINCIPAL</button>
       </div>
     </div>
   </div>
@@ -402,10 +410,10 @@
 <!-- Exit -->
 <div id="exitScreen" hidden>
   <div class="inner">
-    <div class="eyebrow">FIN DE LA JORNADA</div>
-    <h1><span class="y">OBRA</span><span class="s">CERRADA</span></h1>
-    <p>Gracias por jugar. Ya puedes cerrar esta pestaña.</p>
-    <button class="btn" type="button" id="exitBack">VOLVER AL MENÚ</button>
+    <div class="eyebrow" data-i18n="exitEyebrow">FIN DE LA JORNADA</div>
+    <h1><span class="y" data-i18n="exitY">OBRA</span><span class="s" data-i18n="exitS">CERRADA</span></h1>
+    <p data-i18n="exitP">Gracias por jugar. Ya puedes cerrar esta pestaña.</p>
+    <button class="btn" type="button" id="exitBack" data-i18n="exitBack">VOLVER AL MENÚ</button>
   </div>
 </div>
 
@@ -414,15 +422,15 @@
   <div class="card">
     <div class="stripes"></div>
     <div class="card-body">
-      <div class="shop-head"><h2>OBREROS</h2><div class="pill"><i class="coin"></i><span id="shopCoins">0</span></div></div>
-      <button class="btn ghost" type="button" id="testCoins">+50 MONEDAS (PRUEBA)</button>
+      <div class="shop-head"><h2 data-i18n="shopH">OBREROS</h2><div class="pill"><i class="coin"></i><span id="shopCoins">0</span></div></div>
+      <button class="btn ghost" type="button" id="testCoins" data-i18n="testCoins">+50 MONEDAS (PRUEBA)</button>
       <div class="skins" id="skinList"></div>
-      <p class="shop-note">Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.</p>
-      <button class="btn" type="button" id="shopBack">VOLVER</button>
+      <p class="shop-note" data-i18n="shopNote">Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.</p>
+      <button class="btn" type="button" id="shopBack" data-i18n="back">VOLVER</button>
     </div>
   </div>
 </div>
-<div id="viewBar" hidden><span>Arrastra para girar y subir o bajar · rueda o pellizca para acercar</span><button class="btn" type="button" id="viewBack">VER RESULTADOS</button></div>
+<div id="viewBar" hidden><span data-i18n="viewHelp">Arrastra para girar y subir o bajar · rueda o pellizca para acercar</span><button class="btn" type="button" id="viewBack" data-i18n="viewBack">VER RESULTADOS</button></div>
 <div id="flash"></div>
 <div id="fade"></div>
 
@@ -512,6 +520,88 @@ function speckle(g, w, h, n, cols, s = 2) {
 const SETTINGS_KEY = 'torre-infinito-settings';
 const settings = { quality: COARSE ? 'media' : 'alta', sound: true, volume: 80, god: false, aimHelp: true, skipIntro: false };
 try { Object.assign(settings, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch (e) { /* ignore */ }
+/* =========================================================
+   Language (Español / English)
+   ========================================================= */
+const STR = {
+  es: {
+    docTitle: 'Torre al Infinito',
+    floorsLbl: 'PLANTAS', best: 'RÉCORD', coins: 'Monedas', pause: 'Pausa', mute: 'Silenciar sonido', unmute: 'Activar sonido',
+    god: 'MODO DIOS', godTitle: 'Todas las plantas caen perfectas. Las partidas con modo dios no cuentan para el récord.',
+    newZone: 'NUEVA ZONA', mission: 'MISIÓN', missionTxt: 'Sube a la plataforma elevadora',
+    dialogAria: 'Conversación con el encargado', foremanRole: 'ENCARGADO DE OBRA', tapMore: 'TOCA PARA SEGUIR ▸', skip: 'SALTAR INTRO ▸▸',
+    eyebrow: 'ORDEN DE OBRA Nº 001 · ALTURA MÁXIMA: SIN LÍMITE', titleY: 'TORRE', titleS: 'AL INFINITO', menuAria: 'Menú principal',
+    play: 'Jugar', workers: 'Obreros', options: 'Opciones', exit: 'Salir',
+    exitQ: '¿Seguro que quieres salir del juego?', exitYes: 'Sí, salir', cancel: 'Cancelar',
+    optionsH: 'OPCIONES', quality: 'Calidad gráfica', qLow: 'BAJA', qMed: 'MEDIA', qHigh: 'ALTA',
+    qualityNote: 'Alta activa sombras detalladas y máxima resolución. Si va lento en el móvil, prueba Media o Baja.',
+    sound: 'Sonido', volume: 'Volumen', aim: 'Ayuda de puntería', aimNote: 'Marca en la torre dónde caerá el bloque. Se pone amarilla cuando está perfecto.',
+    godOpt: 'Modo dios', godNote: 'Todo cae perfecto. Las partidas con modo dios no cuentan para el récord.',
+    skipOpt: 'Saltar la introducción', skipNote: 'Empiezas directamente en la plataforma.', back: 'VOLVER',
+    pauseH: 'PAUSA', resume: 'CONTINUAR', mainMenu: 'MENÚ PRINCIPAL',
+    overEyebrow: 'PARTE DE OBRA · INCIDENCIA', overY: 'OBRA', overS: 'DETENIDA',
+    statFloors: 'PLANTAS', statAlt: 'ALTITUD', statZone: 'ZONA', statCoins: 'MONEDAS',
+    again: 'VOLVER A CONSTRUIR', viewTower: 'VER LA TORRE', newRecord: '¡NUEVO RÉCORD!', godRun: 'partida con modo dios',
+    exitEyebrow: 'FIN DE LA JORNADA', exitY: 'OBRA', exitS: 'CERRADA', exitP: 'Gracias por jugar. Ya puedes cerrar esta pestaña.', exitBack: 'VOLVER AL MENÚ',
+    shopH: 'OBREROS', testCoins: '+50 MONEDAS (PRUEBA)',
+    shopNote: 'Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.',
+    viewHelp: 'Arrastra para girar y subir o bajar · rueda o pellizca para acercar', viewBack: 'VER RESULTADOS',
+    perfect: '¡PERFECTO!', grows: 'La planta crece', godOn: 'Todo cae perfecto',
+    windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
+    equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
+    hintWalkTouch: 'Arrastra el dedo para caminar', hintWalkMouse: 'Camina con WASD o las flechas, o haz clic en el suelo',
+    hintCraneTouch: 'Arrastra el dedo para dirigir la grúa · levántalo para soltar', hintCraneMouse: 'Mueve el ratón para dirigir la grúa · clic para soltar',
+    coin_bronce: 'bronce', coin_plata: 'plata', coin_oro: 'oro', coin_diamante: 'diamante',
+    ly: 'años luz', mly: 'millones de años luz',
+    sign: ['OBRA', 'TORRE AL INFINITO', 'Uso obligatorio de casco'],
+    lines: [
+      '¡Por fin llegas! Soy Paco, el encargado de esta obra.',
+      'El ayuntamiento quiere la torre más alta jamás construida. Sin límite de altura. Ni el cielo.',
+      'Tú dirigirás la grúa desde la plataforma elevadora. Señala dónde va cada planta y suelta cuando esté encima.',
+      'Lo que sobresalga se cae, y cuanto más subas, más viento. ¡Venga, sube a la plataforma!',
+    ],
+  },
+  en: {
+    docTitle: 'Tower to Infinity',
+    floorsLbl: 'FLOORS', best: 'BEST', coins: 'Coins', pause: 'Pause', mute: 'Mute sound', unmute: 'Turn sound on',
+    god: 'GOD MODE', godTitle: "Every floor lands perfectly. Games with god mode don't count toward your best.",
+    newZone: 'NEW ZONE', mission: 'MISSION', missionTxt: 'Step onto the lift platform',
+    dialogAria: 'Conversation with the site foreman', foremanRole: 'SITE FOREMAN', tapMore: 'TAP TO CONTINUE ▸', skip: 'SKIP INTRO ▸▸',
+    eyebrow: 'WORK ORDER No. 001 · MAX HEIGHT: NO LIMIT', titleY: 'TOWER', titleS: 'TO INFINITY', menuAria: 'Main menu',
+    play: 'Play', workers: 'Workers', options: 'Options', exit: 'Quit',
+    exitQ: 'Are you sure you want to quit the game?', exitYes: 'Yes, quit', cancel: 'Cancel',
+    optionsH: 'OPTIONS', quality: 'Graphics quality', qLow: 'LOW', qMed: 'MEDIUM', qHigh: 'HIGH',
+    qualityNote: 'High turns on detailed shadows and full resolution. If it runs slowly on your phone, try Medium or Low.',
+    sound: 'Sound', volume: 'Volume', aim: 'Aiming guide', aimNote: 'Marks where the block will land on the tower. It turns yellow when the drop is perfect.',
+    godOpt: 'God mode', godNote: "Everything lands perfectly. Games with god mode don't count toward your best.",
+    skipOpt: 'Skip the intro', skipNote: 'Start right on the platform.', back: 'BACK',
+    pauseH: 'PAUSED', resume: 'RESUME', mainMenu: 'MAIN MENU',
+    overEyebrow: 'SITE REPORT · INCIDENT', overY: 'WORK', overS: 'STOPPED',
+    statFloors: 'FLOORS', statAlt: 'ALTITUDE', statZone: 'ZONE', statCoins: 'COINS',
+    again: 'BUILD AGAIN', viewTower: 'VIEW THE TOWER', newRecord: 'NEW BEST!', godRun: 'god mode game',
+    exitEyebrow: 'END OF SHIFT', exitY: 'SITE', exitS: 'CLOSED', exitP: 'Thanks for playing. You can close this tab now.', exitBack: 'BACK TO MENU',
+    shopH: 'WORKERS', testCoins: '+50 COINS (TEST)',
+    shopNote: 'You earn coins every time you place a floor. Perfect streaks multiply what you earn, and the higher you build, the more valuable the coins. God mode earns no coins.',
+    viewHelp: 'Drag to orbit and move up or down · scroll or pinch to zoom', viewBack: 'SEE RESULTS',
+    perfect: 'PERFECT!', grows: 'The floor grows', godOn: 'Everything lands perfectly',
+    windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
+    equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
+    hintWalkTouch: 'Drag your finger to walk', hintWalkMouse: 'Walk with WASD or the arrow keys, or click the ground',
+    hintCraneTouch: 'Drag your finger to steer the crane · lift it to drop', hintCraneMouse: 'Move the mouse to steer the crane · click to drop',
+    coin_bronce: 'bronze', coin_plata: 'silver', coin_oro: 'gold', coin_diamante: 'diamond',
+    ly: 'light years', mly: 'million light years',
+    sign: ['SITE', 'TOWER TO INFINITY', 'Hard hats required'],
+    lines: [
+      "There you are! I'm Paco, the foreman on this site.",
+      'The city wants the tallest tower ever built. No height limit. Not even the sky.',
+      "You'll run the crane from the lift platform. Point where each floor goes and let go when it's right above.",
+      'Anything that sticks out falls off, and the higher you go, the stronger the wind. Come on, get on the platform!',
+    ],
+  },
+};
+let LANG = STR[settings.lang] ? settings.lang : (/^es\b/i.test(navigator.language || 'es') ? 'es' : 'en');
+const t = (k, ...a) => { const v = STR[LANG][k] !== undefined ? STR[LANG][k] : STR.es[k]; return typeof v === 'function' ? v(...a) : v; };
+const tx = o => (o && typeof o === 'object' ? (o[LANG] || o.es) : o); // pick the current language from { es, en }
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
 let best = 0;
 try { best = parseInt(localStorage.getItem('torre-infinito-best') || '0', 10) || 0; } catch (e) { best = 0; }
@@ -572,20 +662,20 @@ const LIFT_GROUND = -1.95;
 const START = new THREE.Vector2(8.3, 19.5), GATE_IN = new THREE.Vector2(8.3, 11.4), FOREMAN = new THREE.Vector2(6.8, 9.5);
 
 const ZONES = [
-  { lv: 0,   name: 'Obra · Ciudad',          sub: 'Planta baja' },
-  { lv: 5,   name: 'Entre las nubes',        sub: 'A partir de aquí sopla el viento' },
-  { lv: 12,  name: 'Ruta de aviones',        sub: 'Altitud de crucero, 10 km' },
-  { lv: 18,  name: 'Estratosfera',           sub: 'El cielo empieza a oscurecerse' },
-  { lv: 24,  name: 'Espacio exterior',       sub: 'Has cruzado la línea de Kármán' },
-  { lv: 32,  name: 'La Luna',                sub: 'A 384.400 km de casa' },
-  { lv: 42,  name: 'Marte',                  sub: 'El planeta rojo' },
-  { lv: 48,  name: 'Cinturón de asteroides', sub: 'Cuidado con las rocas' },
-  { lv: 54,  name: 'Júpiter',                sub: 'El gigante gaseoso' },
-  { lv: 66,  name: 'Saturno',                sub: 'Señor de los anillos' },
-  { lv: 78,  name: 'Neptuno',                sub: 'El confín del sistema solar' },
-  { lv: 92,  name: 'Vía Láctea',             sub: 'Vista de la galaxia entera' },
-  { lv: 110, name: 'Más allá del infinito',  sub: 'Ningún obrero llegó tan lejos' },
-  { lv: 120, name: 'Otra dimensión',         sub: 'Las leyes de la física ya no se aplican' },
+  { lv: 0,   name: { es: 'Obra · Ciudad', en: 'Site · City' }, sub: { es: 'Planta baja', en: 'Ground floor' } },
+  { lv: 5,   name: { es: 'Entre las nubes', en: 'Among the clouds' }, sub: { es: 'A partir de aquí sopla el viento', en: 'From here on, the wind blows' } },
+  { lv: 12,  name: { es: 'Ruta de aviones', en: 'Airliner lane' }, sub: { es: 'Altitud de crucero, 10 km', en: 'Cruising altitude, 10 km' } },
+  { lv: 18,  name: { es: 'Estratosfera', en: 'Stratosphere' }, sub: { es: 'El cielo empieza a oscurecerse', en: 'The sky starts to darken' } },
+  { lv: 24,  name: { es: 'Espacio exterior', en: 'Outer space' }, sub: { es: 'Has cruzado la línea de Kármán', en: 'You crossed the Kármán line' } },
+  { lv: 32,  name: { es: 'La Luna', en: 'The Moon' }, sub: { es: 'A 384.400 km de casa', en: '384,400 km from home' } },
+  { lv: 42,  name: { es: 'Marte', en: 'Mars' }, sub: { es: 'El planeta rojo', en: 'The red planet' } },
+  { lv: 48,  name: { es: 'Cinturón de asteroides', en: 'Asteroid belt' }, sub: { es: 'Cuidado con las rocas', en: 'Watch out for rocks' } },
+  { lv: 54,  name: { es: 'Júpiter', en: 'Jupiter' }, sub: { es: 'El gigante gaseoso', en: 'The gas giant' } },
+  { lv: 66,  name: { es: 'Saturno', en: 'Saturn' }, sub: { es: 'Señor de los anillos', en: 'Lord of the rings' } },
+  { lv: 78,  name: { es: 'Neptuno', en: 'Neptune' }, sub: { es: 'El confín del sistema solar', en: 'The edge of the solar system' } },
+  { lv: 92,  name: { es: 'Vía Láctea', en: 'Milky Way' }, sub: { es: 'Vista de la galaxia entera', en: 'The whole galaxy in view' } },
+  { lv: 110, name: { es: 'Más allá del infinito', en: 'Beyond infinity' }, sub: { es: 'Ningún obrero llegó tan lejos', en: 'No worker has ever come this far' } },
+  { lv: 120, name: { es: 'Otra dimensión', en: 'Another dimension' }, sub: { es: 'Las leyes de la física ya no se aplican', en: 'The laws of physics no longer apply' } },
 ];
 const DIM_LV = 120;
 const ALT_KF = [[0, 0], [5, 1500], [12, 10000], [18, 30000], [24, 100000], [32, 3.844e8], [42, 7.8e10], [48, 3.0e11], [54, 6.28e11], [66, 1.28e12], [78, 4.35e12], [92, 2.46e20], [110, 2.4e22], [160, 1e26]];
@@ -595,11 +685,12 @@ const altText = lv => lv >= DIM_LV ? '∞' : fmtAlt(altitudeAt(lv));
 function fmtAlt(m) {
   if (m < 1000) return Math.round(m) + ' m';
   const LY = 9.4607e15;
-  if (m < LY * 0.01) { const km = m / 1000; return (km < 100 ? km.toFixed(1).replace('.', ',') : Math.round(km).toLocaleString('es-ES')) + ' km'; }
+  const loc = LANG === 'es' ? 'es-ES' : 'en-US', dec = (v, d) => v.toLocaleString(loc, { minimumFractionDigits: d, maximumFractionDigits: d });
+  if (m < LY * 0.01) { const km = m / 1000; return (km < 100 ? dec(km, 1) : Math.round(km).toLocaleString(loc)) + ' km'; }
   const ly = m / LY;
-  if (ly >= 1e6) return (ly / 1e6).toFixed(1).replace('.', ',') + ' millones de años luz';
-  if (ly < 10) return ly.toFixed(2).replace('.', ',') + ' años luz';
-  return Math.round(ly).toLocaleString('es-ES') + ' años luz';
+  if (ly >= 1e6) return dec(ly / 1e6, 1) + ' ' + t('mly');
+  if (ly < 10) return dec(ly, 2) + ' ' + t('ly');
+  return Math.round(ly).toLocaleString(loc) + ' ' + t('ly');
 }
 
 // flow: title | intro | talk | walk | board | playing | paused | over | exit
@@ -819,6 +910,7 @@ scene.environment = ENV_DAY;
 /* =========================================================
    Ground, city, construction site
    ========================================================= */
+let drawSign = () => {};
 const groundGroup = new THREE.Group();
 scene.add(groundGroup);
 const obstacles = []; // [minX, maxX, minZ, maxZ] for the walking worker
@@ -877,12 +969,16 @@ const obstacles = []; // [minX, maxX, minZ, maxZ] for the walking worker
   }
   fence(-13, -13, 13, -13); fence(-13, -13, -13, 13); fence(13, -13, 13, 13);
   fence(-13, 13, 6, 13); fence(10.6, 13, 13, 13);
-  const signTex = canvasTex(256, 128, (g) => {
+  const signTex = canvasTex(256, 128, () => {});
+  drawSign = () => {
+    const g = signTex.image.getContext('2d'), [a, b, c] = t('sign');
     g.fillStyle = '#ffc21a'; g.fillRect(0, 0, 256, 128); g.fillStyle = '#17181c'; g.fillRect(8, 8, 240, 112);
     g.fillStyle = '#ffc21a'; g.font = 'bold 30px Arial Black, sans-serif'; g.textAlign = 'center';
-    g.fillText('OBRA', 128, 52); g.font = 'bold 20px Arial, sans-serif'; g.fillText('TORRE AL INFINITO', 128, 84);
-    g.font = '14px Arial, sans-serif'; g.fillStyle = '#f5f3ea'; g.fillText('Uso obligatorio de casco', 128, 108);
-  });
+    g.fillText(a, 128, 52); g.font = 'bold 20px Arial, sans-serif'; g.fillText(b, 128, 84);
+    g.font = '14px Arial, sans-serif'; g.fillStyle = '#f5f3ea'; g.fillText(c, 128, 108);
+    signTex.needsUpdate = true;
+  };
+  drawSign();
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.1), new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.6 }));
   sign.position.set(3.6, GROUND + 1.35, 13.08); groundGroup.add(sign);
 
@@ -1067,11 +1163,11 @@ function poseWalk(p) {
 }
 const worker = makePerson({ shirt: '#34495f', vest: '#ff6a1a', helmet: '#ffc21a' });
 const SKINS = [
-  { id: 'clasico', name: 'Obrero clásico', desc: 'Chaleco naranja y casco amarillo. El de toda la vida.', price: 0,
+  { id: 'clasico', name: { es: 'Obrero clásico', en: 'Classic worker' }, desc: { es: 'Chaleco naranja y casco amarillo. El de toda la vida.', en: 'Orange vest and yellow hard hat. The one and only.' }, price: 0,
     shirt: '#34495f', pants: '#2e4468', vest: '#ff6a1a', refl: '#e3e9ec', helmet: '#ffc21a', glove: '#8a6a3a' },
-  { id: 'dorado', name: 'Leyenda dorada', desc: 'Casco y chaleco de oro para los que no fallan.', price: 50,
+  { id: 'dorado', name: { es: 'Leyenda dorada', en: 'Golden legend' }, desc: { es: 'Casco y chaleco de oro para los que no fallan.', en: 'Gold hard hat and vest for those who never miss.' }, price: 50,
     shirt: '#1d1f24', pants: '#24262c', vest: '#d9a92e', refl: '#1d1f24', helmet: '#f2c94c', glove: '#1d1f24', metal: true },
-  { id: 'astronauta', name: 'Astronauta', desc: 'Traje espacial con escafandra y mochila de oxígeno.', price: 100,
+  { id: 'astronauta', name: { es: 'Astronauta', en: 'Astronaut' }, desc: { es: 'Traje espacial con escafandra y mochila de oxígeno.', en: 'Space suit with a glass helmet and oxygen pack.' }, price: 100,
     shirt: '#eceff2', pants: '#e3e6ea', vest: '#eceff2', refl: '#2f6fb3', helmet: '#eceff2', glove: '#cfd4da', astro: true },
 ];
 function applySkin(pp, sk) {
@@ -1659,7 +1755,7 @@ function land() {
     scene.add(rm); rings.push({ m: rm, t: 0 });
     sfx.perfect(combo);
     if (grew) setTimeout(sfx.grow, 120);
-    showCombo(combo > 1 ? `¡PERFECTO! ×${combo}` : '¡PERFECTO!', grew ? 'La planta crece' : '');
+    showCombo(combo > 1 ? `${t('perfect')} ×${combo}` : t('perfect'), grew ? t('grows') : '');
     cheer = 1;
   } else {
     combo = 0;
@@ -1737,7 +1833,7 @@ function awardCoins(perfect) {
   m.position.set(top.x, level + 0.5, top.z); scene.add(m);
   coinFx.push({ m, t: 0 });
   const el = $('coinPop');
-  el.innerHTML = `+${gain}` + (mult > 1 ? `<small>${type.value} × ${mult}</small>` : type.value > 1 ? `<small>${type.name}</small>` : '');
+  el.innerHTML = `+${gain}` + (mult > 1 ? `<small>${type.value} × ${mult}</small>` : type.value > 1 ? `<small>${t('coin_' + type.name)}</small>` : '');
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06);
   if (type.value >= 5) tone(2637, 0.18, 'triangle', 0.05, 0, 0.12);
@@ -1755,12 +1851,18 @@ function gameOver() {
   if (level > best && !godUsed) { best = level; isRecord = true; try { localStorage.setItem('torre-infinito-best', String(best)); } catch (e) { /* ignore */ } }
   updateHud();
   reticle.visible = false; $('hint').hidden = true;
+  lastOver = { isRecord };
+  fillOver();
+  setTimeout(() => { if (state === 'over' && !viewing) { $('overScreen').hidden = false; focusFirst($('overScreen')); } }, 3600);
+}
+let lastOver = null;
+function fillOver() {
+  if (!lastOver) return;
   $('oFloors').textContent = level;
   $('oAlt').textContent = altText(level);
-  $('oZone').textContent = ZONES[zoneIdx].name;
+  $('oZone').textContent = tx(ZONES[zoneIdx].name);
   $('oCoins').innerHTML = godUsed ? '—' : `<i class="coin"></i>+${runCoins}`;
-  $('oRecord').innerHTML = isRecord ? `RÉCORD <b>${best}</b><span class="newrec">¡NUEVO RÉCORD!</span>` : `RÉCORD <b>${best}</b>` + (godUsed ? ' · partida con modo dios' : '');
-  setTimeout(() => { if (state === 'over' && !viewing) { $('overScreen').hidden = false; focusFirst($('overScreen')); } }, 3600);
+  $('oRecord').innerHTML = `${t('best')} <b>${best}</b>` + (lastOver.isRecord ? `<span class="newrec">${t('newRecord')}</span>` : godUsed ? ' · ' + t('godRun') : '');
 }
 function resetTower() {
   towerMeshes.forEach(m => { scene.remove(m); m.geometry.dispose(); }); towerMeshes.length = 0;
@@ -1785,7 +1887,7 @@ function focusFirst(el) { if (COARSE) return; const b = el.querySelector('button
 function updateHud() {
   $('floorNum').textContent = level;
   $('alt').textContent = 'ALT ' + altText(level);
-  $('zone').textContent = ZONES[zoneIdx].name;
+  $('zone').textContent = tx(ZONES[zoneIdx].name);
   $('best').textContent = best; $('titleBest').textContent = best;
   if (level >= 3) $('hint').hidden = true;
 }
@@ -1798,15 +1900,15 @@ function showCombo(txt, sub) {
 }
 function showBanner(z) {
   const el = $('banner');
-  $('bannerName').textContent = z.name; $('bannerSub').textContent = z.sub;
+  $('bannerName').textContent = tx(z.name); $('bannerSub').textContent = tx(z.sub);
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   sfx.zone();
 }
 let windUiT = 0;
 function updateWindUi() {
   const txt = $('windTxt'), arrow = $('windArrow');
-  if (windS < 0.05) { txt.textContent = 'Sin viento'; arrow.style.opacity = 0.3; return; }
-  txt.textContent = (level >= 24 ? 'Viento solar ' : 'Viento ') + Math.round(windS * 22) + ' km/h';
+  if (windS < 0.05) { txt.textContent = t('windNone'); arrow.style.opacity = 0.3; return; }
+  txt.textContent = t(level >= 24 ? 'windSolar' : 'wind') + ' ' + Math.round(windS * 22) + ' km/h';
   arrow.style.opacity = 1;
   const sr = windX * RIGHT.x + windZ * RIGHT.y, tc = -(windX * BACK.x + windZ * BACK.y);
   arrow.style.transform = `rotate(${Math.atan2(tc * 0.5, sr) * 180 / Math.PI}deg)`;
@@ -1815,12 +1917,26 @@ const ICON_ON = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="tr
 const ICON_OFF = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 function syncSettingsUi() {
   $('mute').innerHTML = settings.sound ? ICON_ON : ICON_OFF;
-  $('mute').setAttribute('aria-label', settings.sound ? 'Silenciar sonido' : 'Activar sonido');
+  $('mute').setAttribute('aria-label', t(settings.sound ? 'mute' : 'unmute'));
+  document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
   $('god').setAttribute('aria-pressed', String(settings.god));
   document.querySelectorAll('#qualitySeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.q === settings.quality)));
   $('optSound').checked = settings.sound; $('optVolume').value = settings.volume; $('optVolume').disabled = !settings.sound;
   $('optAim').checked = settings.aimHelp; $('optGod').checked = settings.god; $('optSkip').checked = settings.skipIntro;
   applyVolume();
+}
+let hintKey = null;
+function setHint(k) { hintKey = k; $('hint').textContent = t(k); }
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.title = t('docTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-title]').forEach(el => el.setAttribute('title', t(el.dataset.i18nTitle)));
+  $('missionTxt').textContent = t('missionTxt');
+  if (hintKey) $('hint').textContent = t(hintKey);
+  drawSign(); updateHud(); updateWindUi(); syncSettingsUi(); fillOver();
+  if (shopOpen) renderShop();
 }
 function setGod(on) {
   settings.god = on; if (on && (state === 'playing' || state === 'paused' || state === 'board')) godUsed = true;
@@ -1830,12 +1946,7 @@ function setGod(on) {
 /* =========================================================
    Flow: title → intro → talk → walk → board → playing
    ========================================================= */
-const LINES = [
-  '¡Por fin llegas! Soy Paco, el encargado de esta obra.',
-  'El ayuntamiento quiere la torre más alta jamás construida. Sin límite de altura. Ni el cielo.',
-  'Tú dirigirás la grúa desde la plataforma elevadora. Señala dónde va cada planta y suelta cuando esté encima.',
-  'Lo que sobresalga se cae, y cuanto más subas, más viento. ¡Venga, sube a la plataforma!',
-];
+const LINES = { get length() { return t('lines').length; } }; // current language, see STR.*.lines
 let lineIdx = 0, typed = 0, lastTyped = 0;
 const moveTarget = new THREE.Vector2(), keys = new Set();
 let hasMoveTarget = false, stepSide = 0;
@@ -1866,15 +1977,15 @@ function renderShop() {
     const row = document.createElement('div');
     row.className = 'skin'; row.setAttribute('role', 'button'); row.tabIndex = 0;
     row.setAttribute('aria-current', String(previewSkin === sk.id));
-    row.setAttribute('aria-label', `Probar ${sk.name}`);
+    row.setAttribute('aria-label', t('tryOn', tx(sk.name)));
     let action;
-    if (equipped) action = '<span class="tag-on">EQUIPADO</span>';
-    else if (owned) action = '<button class="btn act" type="button">EQUIPAR</button>';
+    if (equipped) action = `<span class="tag-on">${t('equipped')}</span>`;
+    else if (owned) action = `<button class="btn act" type="button">${t('equip')}</button>`;
     else {
       const short = sk.price - profile.coins;
-      action = `<button class="btn act" type="button" ${short > 0 ? 'disabled' : ''} title="${short > 0 ? `Te faltan ${short} monedas` : 'Comprar'}"><i class="coin"></i>${sk.price}</button>`;
+      action = `<button class="btn act" type="button" ${short > 0 ? 'disabled' : ''} title="${short > 0 ? t('short', short) : t('buy')}"><i class="coin"></i>${sk.price}</button>`;
     }
-    row.innerHTML = `${portrait(sk)}<div><b>${sk.name}</b><small>${sk.desc}</small></div>${action}`;
+    row.innerHTML = `${portrait(sk)}<div><b>${tx(sk.name)}</b><small>${tx(sk.desc)}</small></div>${action}`;
     const preview = () => { previewSkin = sk.id; applySkin(worker, sk); sfx.click(); renderShop(); };
     row.addEventListener('click', preview);
     row.addEventListener('keydown', e => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); preview(); } });
@@ -1942,7 +2053,7 @@ function startTalk() {
   sfx.bell();
 }
 function advanceTalk() {
-  const full = LINES[lineIdx];
+  const full = t('lines')[lineIdx];
   if (typed < full.length) { typed = full.length; return; }
   lineIdx++; typed = 0; lastTyped = 0;
   if (lineIdx >= LINES.length) beginWalk();
@@ -1951,11 +2062,10 @@ function beginWalk() {
   state = 'walk';
   $('dialog').hidden = true;
   $('mission').hidden = false;
-  $('missionTxt').textContent = 'Sube a la plataforma elevadora';
+  $('missionTxt').textContent = t('missionTxt');
   marker.visible = true;
-  const hint = $('hint');
-  hint.textContent = COARSE ? 'Arrastra el dedo para caminar' : 'Camina con WASD o las flechas, o haz clic en el suelo';
-  hint.hidden = false;
+  setHint(COARSE ? 'hintWalkTouch' : 'hintWalkMouse');
+  $('hint').hidden = false;
 }
 function skipIntro() {
   if ($('skipBtn').hidden) return;
@@ -1977,9 +2087,8 @@ function startPlaying() {
   state = 'playing';
   hum(false); sfx.bell();
   $('hud').hidden = false;
-  const hint = $('hint');
-  hint.textContent = COARSE ? 'Arrastra el dedo para dirigir la grúa · levántalo para soltar' : 'Mueve el ratón para dirigir la grúa · clic para soltar';
-  hint.hidden = level >= 3;
+  setHint(COARSE ? 'hintCraneTouch' : 'hintCraneMouse');
+  $('hint').hidden = level >= 3;
   target.set(0, 0); aimed = false;
   updateHud();
 }
@@ -2024,6 +2133,7 @@ $('viewBack').addEventListener('click', () => { viewing = false; orbitYaw = 0; v
 $('pauseBtn').addEventListener('click', pauseGame);
 $('skipBtn').addEventListener('click', e => { e.stopPropagation(); skipIntro(); });
 $('dialog').addEventListener('click', () => { if (state === 'talk') advanceTalk(); });
+document.querySelectorAll('#langSeg button').forEach(b => b.addEventListener('click', () => { LANG = settings.lang = b.dataset.lang; saveSettings(); sfx.click(); applyLang(); }));
 document.querySelectorAll('#qualitySeg button').forEach(b => b.addEventListener('click', () => { settings.quality = b.dataset.q; saveSettings(); syncSettingsUi(); applyQuality(); }));
 $('optSound').addEventListener('change', e => { settings.sound = e.target.checked; saveSettings(); syncSettingsUi(); if (settings.sound) { audio(); sfx.click(); } });
 $('optVolume').addEventListener('input', e => { settings.volume = +e.target.value; saveSettings(); applyVolume(); });
@@ -2033,7 +2143,7 @@ $('optGod').addEventListener('change', e => setGod(e.target.checked));
 $('optSkip').addEventListener('change', e => { settings.skipIntro = e.target.checked; saveSettings(); });
 ['mute', 'god', 'pauseBtn'].forEach(id => $(id).addEventListener('pointerup', e => e.stopPropagation()));
 $('mute').addEventListener('click', () => { settings.sound = !settings.sound; saveSettings(); syncSettingsUi(); if (settings.sound) audio(); $('mute').blur(); });
-$('god').addEventListener('click', () => { setGod(!settings.god); if (settings.god) showCombo('MODO DIOS', 'Todo cae perfecto'); $('god').blur(); });
+$('god').addEventListener('click', () => { setGod(!settings.god); if (settings.god) showCombo(t('god'), t('godOn')); $('god').blur(); });
 
 /* =========================================================
    Input
@@ -2387,7 +2497,7 @@ function update(dt) {
     foreman.armL.rotation.set(-0.7, 0, -0.1);
   }
   if (state === 'talk') {
-    const full = LINES[lineIdx];
+    const full = t('lines')[lineIdx];
     typed = Math.min(full.length, typed + dt * 42);
     const n = Math.floor(typed);
     if (n !== lastTyped) { if (n % 3 === 0) sfx.blip(); lastTyped = n; }
@@ -2509,6 +2619,7 @@ syncSettingsUi();
 applyQuality();
 applySkin(worker, skinById(profile.skin));
 updateCoinsUi();
+applyLang();
 goTitle();
 camPos.set(24, 7.5, 18);
 let last = performance.now();

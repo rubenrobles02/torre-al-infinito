@@ -16,6 +16,8 @@ Abre `index.html` en el navegador (ordenador o móvil).
 
 ## Opciones
 
+- Idioma: español o inglés (por defecto, el del navegador)
+
 - Calidad gráfica (Baja / Media / Alta)
 - Sonido y volumen
 - Ayuda de puntería
