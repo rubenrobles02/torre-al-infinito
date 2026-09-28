@@ -2006,6 +2006,7 @@ function closeOptions() { showOnly(optionsReturn); focusFirst($(optionsReturn));
 $('mPlay').addEventListener('click', startIntro);
 $('mShop').addEventListener('click', openShop);
 $('shopBack').addEventListener('click', closeShop);
+$('testCoins').hidden = /github\.io$/.test(location.hostname); // TEMPORAL: el botón de prueba no sale en la web pública
 $('testCoins').addEventListener('click', () => { profile.coins += 50; saveProfile(); tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06); renderShop(); }); // TEMPORAL: quitar antes de publicar
 $('mOptions').addEventListener('click', () => { audio(); sfx.click(); openOptions('titleScreen'); });
 $('mExit').addEventListener('click', () => { sfx.click(); $('mainMenu').hidden = true; $('exitConfirm').hidden = false; focusFirst($('exitConfirm')); });
