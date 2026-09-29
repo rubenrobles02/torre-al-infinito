@@ -211,6 +211,21 @@
     10%, 82% { opacity: 1; transform: translate(-50%, 0); }
     100% { opacity: 0; transform: translate(-50%, -8px); }
   }
+  /* crane joystick + drop button (touch screens) */
+  #pad { position: fixed; inset: auto 0 0 0; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 0 max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 22px) max(18px, env(safe-area-inset-left, 0px)); }
+  #padStick { pointer-events: auto; touch-action: none; position: relative; width: 136px; height: 136px; border-radius: 50%;
+    background: rgba(12,13,16,.42); border: 3px solid rgba(255,255,255,.35); box-shadow: 0 4px 18px rgba(0,0,0,.25); }
+  #padStick::before, #padStick::after { content: ''; position: absolute; left: 50%; top: 50%; background: rgba(255,255,255,.22); transform: translate(-50%, -50%); }
+  #padStick::before { width: 70%; height: 3px; } #padStick::after { width: 3px; height: 70%; }
+  #padKnob { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+    background: var(--hazard); box-shadow: 0 4px 0 var(--hazard-dark), 0 6px 14px rgba(0,0,0,.35); }
+  #dropBtn { pointer-events: auto; touch-action: none; width: 112px; height: 112px; border-radius: 50%; border: 0; cursor: pointer;
+    background: var(--signal); color: #17181c; font-family: var(--display); font-size: 19px; line-height: 1;
+    box-shadow: 0 6px 0 #a8430d, 0 8px 18px rgba(0,0,0,.35); display: grid; place-items: center; }
+  #dropBtn:active, #dropBtn.down { transform: translateY(5px); box-shadow: 0 1px 0 #a8430d, 0 3px 8px rgba(0,0,0,.3); }
+  #dropBtn svg { display: block; margin: 0 auto 4px; }
+  body.pad-on #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 170px); }
   #hint {
     position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%);
     background: var(--panel); padding: 8px 14px; font-size: 16px; font-weight: 600; letter-spacing: .04em;
@@ -304,6 +319,10 @@
 </div>
 <button id="skipBtn" type="button" hidden data-i18n="skip">SALTAR INTRO ▸▸</button>
 <div id="joy" hidden><div id="joyKnob"></div></div>
+<div id="pad" hidden>
+  <div id="padStick" role="application" aria-label="Joystick de la grúa" data-i18n-aria="padAria"><div id="padKnob"></div></div>
+  <button id="dropBtn" type="button"><span><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3v13M6 11l6 6 6-6M5 21h14" stroke="currentColor" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="dropBtn">SOLTAR</span></span></button>
+</div>
 
 <!-- Title -->
 <div id="titleScreen">
@@ -337,6 +356,14 @@
             <button type="button" data-lang="es" aria-pressed="false">ESPAÑOL</button>
             <button type="button" data-lang="en" aria-pressed="false">ENGLISH</button>
           </div>
+        </div>
+        <div class="opt">
+          <div class="opt-head"><span class="lbl" data-i18n="touchCtl">Controles en pantalla táctil</span></div>
+          <div class="seg seg2" id="ctlSeg" role="group" aria-label="Controles en pantalla táctil" data-i18n-aria="touchCtl">
+            <button type="button" data-ctl="joystick" aria-pressed="false" data-i18n="ctlJoy">JOYSTICK</button>
+            <button type="button" data-ctl="dedo" aria-pressed="false" data-i18n="ctlFinger">CON EL DEDO</button>
+          </div>
+          <small data-i18n="ctlNote">Joystick para mover la grúa y botón para soltar, o arrastrar el dedo por la pantalla y levantarlo para soltar.</small>
         </div>
         <div class="opt">
           <div class="opt-head"><span class="lbl" data-i18n="quality">Calidad gráfica</span></div>
@@ -521,7 +548,7 @@ function speckle(g, w, h, n, cols, s = 2) {
    Settings
    ========================================================= */
 const SETTINGS_KEY = 'torre-infinito-settings';
-const settings = { quality: COARSE ? 'media' : 'alta', sound: true, volume: 80, god: false, aimHelp: true, skipIntro: false };
+const settings = { quality: COARSE ? 'media' : 'alta', sound: true, volume: 80, god: false, aimHelp: true, skipIntro: false, touchCtl: 'joystick' };
 try { Object.assign(settings, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch (e) { /* ignore */ }
 /* =========================================================
    Language (Español / English)
@@ -553,7 +580,9 @@ const STR = {
     windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
     equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
     hintWalkTouch: 'Arrastra el dedo para caminar', hintWalkMouse: 'Camina con WASD o las flechas, o haz clic en el suelo',
-    hintCraneTouch: 'Arrastra el dedo para dirigir la grúa · levántalo para soltar', hintCraneMouse: 'Mueve el ratón para dirigir la grúa · clic para soltar',
+    hintCraneTouch: 'Arrastra el dedo para dirigir la grúa · levántalo para soltar', hintJoy: 'Mueve la grúa con el joystick · pulsa SOLTAR',
+    dropBtn: 'SOLTAR', padAria: 'Joystick de la grúa', touchCtl: 'Controles en pantalla táctil', ctlJoy: 'JOYSTICK', ctlFinger: 'CON EL DEDO',
+    ctlNote: 'Joystick para mover la grúa y botón para soltar, o arrastrar el dedo por la pantalla y levantarlo para soltar.', hintCraneMouse: 'Mueve el ratón para dirigir la grúa · clic para soltar',
     coin_bronce: 'bronce', coin_plata: 'plata', coin_oro: 'oro', coin_diamante: 'diamante',
     ly: 'años luz', mly: 'millones de años luz',
     sign: ['OBRA', 'TORRE AL INFINITO', 'Uso obligatorio de casco'],
@@ -590,7 +619,9 @@ const STR = {
     windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
     equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
     hintWalkTouch: 'Drag your finger to walk', hintWalkMouse: 'Walk with WASD or the arrow keys, or click the ground',
-    hintCraneTouch: 'Drag your finger to steer the crane · lift it to drop', hintCraneMouse: 'Move the mouse to steer the crane · click to drop',
+    hintCraneTouch: 'Drag your finger to steer the crane · lift it to drop', hintJoy: 'Move the crane with the joystick · tap DROP',
+    dropBtn: 'DROP', padAria: 'Crane joystick', touchCtl: 'Touch screen controls', ctlJoy: 'JOYSTICK', ctlFinger: 'FINGER',
+    ctlNote: 'A joystick to move the crane and a button to drop, or drag your finger across the screen and lift it to drop.', hintCraneMouse: 'Move the mouse to steer the crane · click to drop',
     coin_bronce: 'bronze', coin_plata: 'silver', coin_oro: 'gold', coin_diamante: 'diamond',
     ly: 'light years', mly: 'million light years',
     sign: ['SITE', 'TOWER TO INFINITY', 'Hard hats required'],
@@ -1928,6 +1959,7 @@ function syncSettingsUi() {
   $('mute').innerHTML = settings.sound ? ICON_ON : ICON_OFF;
   $('mute').setAttribute('aria-label', t(settings.sound ? 'mute' : 'unmute'));
   document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
+  document.querySelectorAll('#ctlSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ctl === settings.touchCtl)));
   $('god').setAttribute('aria-pressed', String(settings.god));
   document.querySelectorAll('#qualitySeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.q === settings.quality)));
   $('optSound').checked = settings.sound; $('optVolume').value = settings.volume; $('optVolume').disabled = !settings.sound;
@@ -2096,7 +2128,7 @@ function startPlaying() {
   state = 'playing';
   hum(false); sfx.bell();
   $('hud').hidden = false;
-  setHint(COARSE ? 'hintCraneTouch' : 'hintCraneMouse');
+  setHint(!COARSE ? 'hintCraneMouse' : settings.touchCtl === 'joystick' ? 'hintJoy' : 'hintCraneTouch');
   $('hint').hidden = level >= 3;
   target.set(0, 0); aimed = false;
   updateHud();
@@ -2145,6 +2177,10 @@ $('viewBack').addEventListener('click', () => { viewing = false; orbitYaw = 0; v
 $('pauseBtn').addEventListener('click', pauseGame);
 $('skipBtn').addEventListener('click', e => { e.stopPropagation(); skipIntro(); });
 $('dialog').addEventListener('click', () => { if (state === 'talk') advanceTalk(); });
+document.querySelectorAll('#ctlSeg button').forEach(b => b.addEventListener('click', () => {
+  settings.touchCtl = b.dataset.ctl; saveSettings(); sfx.click(); syncSettingsUi();
+  if (hintKey === 'hintJoy' || hintKey === 'hintCraneTouch') setHint(settings.touchCtl === 'joystick' ? 'hintJoy' : 'hintCraneTouch');
+}));
 document.querySelectorAll('#langSeg button').forEach(b => b.addEventListener('click', () => { LANG = settings.lang = b.dataset.lang; saveSettings(); sfx.click(); applyLang(); }));
 document.querySelectorAll('#qualitySeg button').forEach(b => b.addEventListener('click', () => { settings.quality = b.dataset.q; saveSettings(); syncSettingsUi(); applyQuality(); }));
 $('optSound').addEventListener('change', e => { settings.sound = e.target.checked; saveSettings(); syncSettingsUi(); if (settings.sound) { audio(); sfx.click(); } });
@@ -2178,9 +2214,29 @@ function viewMove(e) {
 }
 function viewUp(e) { vPtr.delete(e.pointerId); pinchD = 0; }
 canvas.addEventListener('wheel', e => { if (state === 'over' && viewing) { e.preventDefault(); viewZoom = clamp(viewZoom * (1 + e.deltaY * 0.0012), 0.25, 1.6); } }, { passive: false });
+// Crane joystick (touch): the stick sets a direction and the crane target glides that way
+const usePad = () => COARSE && settings.touchCtl === 'joystick';
+const pad = { id: null, x: 0, y: 0 };
+const padStick = $('padStick'), padKnob = $('padKnob');
+function padSet(e) {
+  const r = padStick.getBoundingClientRect(), R = r.width / 2 - 12;
+  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; }
+  pad.x = dx / R; pad.y = dy / R;
+  padKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+}
+function padEnd(e) { if (e.pointerId !== pad.id) return; pad.id = null; pad.x = pad.y = 0; padKnob.style.transform = 'translate(0,0)'; }
+padStick.addEventListener('pointerdown', e => { e.preventDefault(); pad.id = e.pointerId; try { padStick.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } padSet(e); aimed = true; });
+padStick.addEventListener('pointermove', e => { if (e.pointerId === pad.id) padSet(e); });
+padStick.addEventListener('pointerup', padEnd);
+padStick.addEventListener('pointercancel', padEnd);
+const dropBtn = $('dropBtn');
+dropBtn.addEventListener('pointerdown', e => { e.preventDefault(); dropBtn.classList.add('down'); drop(); });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => dropBtn.addEventListener(ev, () => dropBtn.classList.remove('down')));
+dropBtn.addEventListener('click', e => { if (e.detail === 0) drop(); }); // keyboard / accessibility activation
 canvas.addEventListener('pointermove', e => {
   if (state === 'over' && viewing) { viewMove(e); return; }
-  if (state === 'playing') aim(e);
+  if (state === 'playing' && !(usePad() && e.pointerType !== 'mouse')) aim(e);
   else if (state === 'walk' && joy.active && e.pointerId === joy.id) {
     let dx = e.clientX - joy.ox, dy = e.clientY - joy.oy; const l = Math.hypot(dx, dy), R = 50;
     if (l > R) { dx *= R / l; dy *= R / l; }
@@ -2191,7 +2247,7 @@ canvas.addEventListener('pointermove', e => {
 canvas.addEventListener('pointerdown', e => {
   try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   if (state === 'over' && viewing) { viewDown(e); return; }
-  if (state === 'playing') { aim(e); return; }
+  if (state === 'playing') { if (!(usePad() && e.pointerType !== 'mouse')) aim(e); return; }
   if (state === 'walk') {
     if (e.pointerType === 'mouse') { if (rayToPlane(e, GROUND)) { moveTarget.set(hit.x, hit.z); hasMoveTarget = true; } }
     else {
@@ -2204,7 +2260,7 @@ canvas.addEventListener('pointerdown', e => {
 function endJoy(e) { if (joy.active && e.pointerId === joy.id) { joy.active = false; joy.x = joy.y = 0; $('joy').hidden = true; } }
 canvas.addEventListener('pointerup', e => {
   endJoy(e); viewUp(e);
-  if (state === 'playing') { aim(e); drop(); }
+  if (state === 'playing') { if (!(usePad() && e.pointerType !== 'mouse')) { aim(e); drop(); } }
   else if (state === 'talk') advanceTalk();
 });
 canvas.addEventListener('pointercancel', e => { endJoy(e); viewUp(e); });
@@ -2391,6 +2447,15 @@ function update(dt) {
       r.m.material.opacity = Math.max(0, 0.95 * (1 - r.t));
       if (r.t >= 1) { scene.remove(r.m); rings.splice(i, 1); }
     }
+  }
+
+  // ---- touch joystick
+  const padOn = state === 'playing' && usePad();
+  if ($('pad').hidden === padOn) { $('pad').hidden = !padOn; document.body.classList.toggle('pad-on', padOn); if (!padOn) { pad.id = null; pad.x = pad.y = 0; padKnob.style.transform = 'translate(0,0)'; } }
+  if (padOn && (pad.x || pad.y)) {
+    const sp = 4.2 * dt; // world units per second at full tilt; screen up moves the crane away from the camera
+    target.x = clamp(target.x + (RIGHT.x * pad.x - BACK.x * pad.y) * sp, -LIM, LIM);
+    target.y = clamp(target.y + (RIGHT.y * pad.x - BACK.y * pad.y) * sp, -LIM, LIM);
   }
 
   // ---- aiming aids
