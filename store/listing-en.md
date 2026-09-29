@@ -19,10 +19,19 @@ You're the worker in charge of building the tallest tower ever made. No height l
 Step onto the lift platform, point where each floor goes and drop the block at just the right moment. Anything that sticks out breaks off, and the next floor gets smaller. How high can you go?
 
 🏗️ HOW TO PLAY
-• Drag your finger to steer the crane and lift it to drop the block.
+• Move the crane with the joystick and tap DROP at just the right moment.
 • The load swings like a pendulum: control the motion.
 • Above the clouds the wind starts to blow, stronger and stronger.
 • Chain perfect drops to make the floor grow back.
+
+🔥 OVERTIME!
+Chain perfect drops before the streak meter runs out. Hit 6 in a row and the tower glows red-hot: coins ×3 and easier perfects.
+
+🐦 INTRUDERS ON SITE
+Pigeons, drones, space junk and meteorites fly across the roof. If they hit it, they break off a piece of your floor. Drop a block on them to knock them out and earn bonus coins.
+
+🧰 TOOLS
+Swing your block through the floating crates: laser level, counterweight, double pay and rebar.
 
 🚀 A TRIP TO INFINITY
 Your tower rises through the city, the clouds, the airliner lane and the stratosphere. Reach outer space and pass the Moon, Mars, the asteroid belt, Jupiter, Saturn and Neptune, until you see the Milky Way… and cross a portal into another dimension.

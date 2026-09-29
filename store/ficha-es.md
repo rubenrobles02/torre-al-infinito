@@ -19,10 +19,19 @@ Eres el obrero encargado de construir la torre más alta jamás hecha. Sin lími
 Súbete a la plataforma elevadora, señala con el dedo dónde va cada planta y suelta el bloque en el momento justo. Lo que sobresalga se rompe y la siguiente planta será más pequeña. ¿Hasta dónde llegarás?
 
 🏗️ CÓMO SE JUEGA
-• Arrastra el dedo para dirigir la grúa y levántalo para soltar el bloque.
+• Mueve la grúa con el joystick y pulsa SOLTAR en el momento justo.
 • La carga se balancea como un péndulo: controla el movimiento.
 • A partir de las nubes sopla el viento, cada vez más fuerte.
 • Encadena perfectos para que la planta vuelva a crecer.
+
+🔥 ¡A DESTAJO!
+Encadena perfectos antes de que se vacíe el medidor de racha. Con 6 seguidos la torre se pone al rojo vivo: monedas ×3 y perfectos más fáciles.
+
+🐦 INTRUSOS EN LA OBRA
+Palomas, drones, chatarra espacial y meteoritos cruzan por lo alto de la torre. Si chocan, rompen un trozo de la planta. Suéltales un bloque encima para derribarlos y llevarte monedas extra.
+
+🧰 HERRAMIENTAS
+Pasa el bloque por las cajas flotantes: nivel láser, contrapeso, paga doble y refuerzo.
 
 🚀 UN VIAJE HASTA EL INFINITO
 Tu torre atraviesa la ciudad, las nubes, la ruta de los aviones y la estratosfera. Sal al espacio y pasa junto a la Luna, Marte, el cinturón de asteroides, Júpiter, Saturno y Neptuno, hasta ver la Vía Láctea… y cruzar un portal hacia otra dimensión.

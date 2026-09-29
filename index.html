@@ -181,6 +181,50 @@
   #god[aria-pressed="true"] { background: var(--hazard); color: #17181c; border-right-color: var(--signal); }
   #god[aria-pressed="true"] i { background: #17181c; border-color: #17181c; }
 
+  /* ---------- streak, boosts, fever, stamp ---------- */
+  .hud-left { display: grid; gap: 8px; justify-items: start; }
+  #streak { background: var(--panel); border-left: 4px solid var(--signal); padding: 7px 12px 9px 10px; width: 176px; display: grid; gap: 6px; }
+  .streak-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  #streakLbl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--steel); }
+  #streakNum { font-family: var(--display); font-weight: 400; font-size: 22px; line-height: 1; color: var(--hazard); }
+  .streak-bar { height: 7px; background: #33363f; overflow: hidden; }
+  #streakFill { display: block; height: 100%; width: 100%; background: var(--hazard); transform-origin: left center; }
+  #streak.fever { border-left-color: #ff3b1a; animation: feverplate .5s ease-in-out infinite alternate; }
+  #streak.fever #streakLbl { color: #ffb08a; }
+  #streak.fever #streakNum { color: #ff6a1a; }
+  #streak.fever #streakFill { background: repeating-linear-gradient(-45deg, #ff6a1a 0 8px, #ffc21a 8px 16px); }
+  @keyframes feverplate { from { box-shadow: 0 0 0 rgba(255,90,26,0); } to { box-shadow: 0 0 18px rgba(255,90,26,.6); } }
+  #chips { display: grid; gap: 5px; }
+  .chip { display: flex; align-items: center; gap: 7px; background: var(--panel); padding: 5px 10px 5px 8px; border-left: 4px solid var(--c); font-size: 15px; font-weight: 700; letter-spacing: .02em; }
+  .chip b { font-family: var(--mono); font-size: 12px; color: var(--steel); margin-left: 2px; font-variant-numeric: tabular-nums; }
+  #feverFx { position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s ease;
+    box-shadow: inset 0 0 90px 20px rgba(255,90,26,.55), inset 0 0 22px 4px rgba(255,194,26,.5); }
+  #feverFx.on { opacity: 1; animation: feverpulse .42s ease-in-out infinite alternate; }
+  @keyframes feverpulse { from { opacity: .65; } to { opacity: 1; } }
+  #alert {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 200px);
+    background: rgba(18,19,23,.92); border-left: 6px solid #ff3b30; padding: 8px 14px; pointer-events: none; opacity: 0;
+    font-weight: 700; font-size: 18px; letter-spacing: .02em; width: max-content; max-width: calc(100% - 32px); text-align: center;
+  }
+  #alert.show { animation: alertin 2.2s ease forwards; }
+  @keyframes alertin { 0% { opacity: 0; transform: translate(-50%, 10px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+  /* inspection stamp every 10 floors */
+  #stamp {
+    position: fixed; left: 50%; top: 44%; pointer-events: none; opacity: 0; display: grid; justify-items: center; gap: 2px;
+    padding: 10px 22px 12px; border: 5px solid #e2452b; outline: 2px solid #e2452b; outline-offset: 4px; color: #e2452b;
+    background: rgba(245,243,234,.08); transform: translate(-50%, -50%) rotate(-9deg);
+  }
+  #stamp b { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 7vw, 40px); line-height: 1; }
+  #stamp span { font-family: var(--mono); font-weight: 700; font-size: 14px; letter-spacing: .3em; }
+  #stamp.show { animation: stampin 1.9s cubic-bezier(.2,.9,.3,1) forwards; }
+  @keyframes stampin {
+    0% { opacity: 0; transform: translate(-50%, -50%) rotate(-9deg) scale(2.4); }
+    12% { opacity: 1; transform: translate(-50%, -50%) rotate(-9deg) scale(.94); }
+    18% { transform: translate(-50%, -50%) rotate(-9deg) scale(1); }
+    78% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) rotate(-9deg) scale(1); }
+  }
+  .flycoin { position: fixed; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; pointer-events: none; z-index: 5;
+    transition: transform .65s cubic-bezier(.5,0,.8,.4), opacity .2s ease .5s; }
   #combo {
     position: fixed; left: 50%; top: 32%; transform: translate(-50%, -50%);
     font-family: var(--display); font-size: clamp(26px, 7vw, 44px); color: var(--hazard);
@@ -295,11 +339,15 @@
 
 <!-- HUD while building -->
 <div id="hud" hidden>
+  <div class="hud-left">
   <div class="plate">
     <div class="floors"><span id="floorNum">0</span><small data-i18n="floorsLbl">PLANTAS</small></div>
     <div class="alt" id="alt">ALT 0 m</div>
     <div class="zone" id="zone">Obra · Ciudad</div>
     <div class="wind"><svg id="windArrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="windTxt">Sin viento</span></div>
+  </div>
+  <div id="streak" hidden><div class="streak-top"><span id="streakLbl">RACHA</span><b id="streakNum">×2</b></div><div class="streak-bar"><i id="streakFill"></i></div></div>
+  <div id="chips"></div>
   </div>
   <div class="hud-right">
     <div class="best"><span data-i18n="best">RÉCORD</span><b id="best">0</b></div>
@@ -311,7 +359,10 @@
     <button id="god" type="button" aria-pressed="false" data-i18n-title="godTitle" title="Todas las plantas caen perfectas. Las partidas con modo dios no cuentan para el récord."><i></i><span data-i18n="god">MODO DIOS</span></button>
   </div>
 </div>
+<div id="feverFx"></div>
 <div id="combo"></div>
+<div id="alert"></div>
+<div id="stamp"><b id="stampNum"></b><span id="stampTxt"></span></div>
 <div id="banner"><div class="tag"><span data-i18n="newZone">NUEVA ZONA</span></div><div class="name" id="bannerName"></div><div class="sub" id="bannerSub"></div></div>
 <div id="hint" hidden></div>
 
@@ -582,6 +633,12 @@ const STR = {
     shopNote: 'Ganas monedas cada vez que colocas una planta. Los perfectos seguidos multiplican lo que ganas y cuanto más alto subes, más valiosas son las monedas. Con modo dios no se ganan monedas.',
     viewHelp: 'Arrastra para girar y subir o bajar · rueda o pellizca para acercar', viewBack: 'VER RESULTADOS',
     perfect: '¡PERFECTO!', grows: 'La planta crece', godOn: 'Todo cae perfecto',
+    streak: 'RACHA', fever: '¡A DESTAJO!', feverSub: 'Monedas ×3 · perfectos más fáciles', feverEnd: 'Fin del destajo', streakLost: 'Racha perdida',
+    nearMiss: '¡POR UN PELO!', shotDown: '¡DERRIBADO!', crack: '¡CRAC!', crackSub: 'Te ha roto un trozo de la planta',
+    incoming: n => `¡Cuidado! ${n} a la vista`, inspected: 'SUPERVISADO', floorN: n => `PLANTA ${n}`,
+    b_laser: 'Nivel láser', b_laserD: 'Perfectos más fáciles', b_weight: 'Contrapeso', b_weightD: 'Sin balanceo ni viento',
+    b_pay: 'Paga doble', b_payD: 'Monedas ×2', b_rebar: 'Refuerzo', b_rebarD: 'La planta recupera su tamaño',
+    i_pigeon: 'Paloma', i_drone: 'Dron', i_junk: 'Chatarra espacial', i_meteor: 'Meteorito', i_glitch: 'Glitch',
     windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
     equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
     hintWalkTouch: 'Arrastra el dedo para caminar', hintWalkMouse: 'Camina con WASD o las flechas, o haz clic en el suelo',
@@ -621,6 +678,12 @@ const STR = {
     shopNote: 'You earn coins every time you place a floor. Perfect streaks multiply what you earn, and the higher you build, the more valuable the coins. God mode earns no coins.',
     viewHelp: 'Drag to orbit and move up or down · scroll or pinch to zoom', viewBack: 'SEE RESULTS',
     perfect: 'PERFECT!', grows: 'The floor grows', godOn: 'Everything lands perfectly',
+    streak: 'STREAK', fever: 'OVERTIME!', feverSub: 'Coins ×3 · easier perfects', feverEnd: 'Overtime over', streakLost: 'Streak lost',
+    nearMiss: 'BY A HAIR!', shotDown: 'SHOT DOWN!', crack: 'CRACK!', crackSub: 'It broke a piece of your floor',
+    incoming: n => `Watch out! ${n} incoming`, inspected: 'INSPECTED', floorN: n => `FLOOR ${n}`,
+    b_laser: 'Laser level', b_laserD: 'Easier perfects', b_weight: 'Counterweight', b_weightD: 'No swing, no wind',
+    b_pay: 'Double pay', b_payD: 'Coins ×2', b_rebar: 'Rebar', b_rebarD: 'The floor grows back',
+    i_pigeon: 'Pigeon', i_drone: 'Drone', i_junk: 'Space junk', i_meteor: 'Meteorite', i_glitch: 'Glitch',
     windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
     equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
     hintWalkTouch: 'Drag your finger to walk', hintWalkMouse: 'Walk with WASD or the arrow keys, or click the ground',
@@ -1706,6 +1769,14 @@ const sfx = {
   warp: () => { tone(90, 2.4, 'sawtooth', 0.07, 1500); tone(180, 2.2, 'sine', 0.08, 2200, 0.1); noise(2.2, 0.18, 900); [0, 7, 12, 19, 24].forEach((s, i) => tone(392 * Math.pow(2, s / 12), 0.7, 'triangle', 0.08, 0, 1.2 + i * 0.08)); },
   scream: () => tone(880, 1.1, 'sawtooth', 0.045, -560),
   thud: () => { tone(70, 0.3, 'sine', 0.45, -30); noise(0.2, 0.35, 300); },
+  kick: () => { tone(150, 0.16, 'sine', 0.32, -110); noise(0.04, 0.08, 5000, 0.2, 'highpass'); },
+  horn: () => { tone(233, 0.5, 'sawtooth', 0.07); tone(294, 0.5, 'sawtooth', 0.06); tone(233, 0.6, 'sawtooth', 0.07, 0, 0.55); tone(294, 0.6, 'sawtooth', 0.06, 0, 0.55); },
+  crash: () => { noise(0.5, 0.45, 900); noise(0.3, 0.3, 3000, 0.04); tone(80, 0.35, 'sine', 0.35, -40); },
+  pop: () => { tone(880, 0.09, 'square', 0.06, 700); noise(0.15, 0.25, 2500); [0, 4, 7].forEach((st, i) => tone(1046 * Math.pow(2, st / 12), 0.12, 'triangle', 0.08, 0, 0.05 + i * 0.05)); },
+  boost: () => { [0, 5, 9, 12, 16].forEach((st, i) => tone(523.25 * Math.pow(2, st / 12), 0.16, 'square', 0.05, 0, i * 0.045)); },
+  warn: () => { tone(988, 0.12, 'square', 0.05); tone(988, 0.12, 'square', 0.05, 0, 0.2); },
+  stamp: () => { tone(95, 0.2, 'sine', 0.45, -40); noise(0.1, 0.3, 700); },
+  lost: () => tone(392, 0.35, 'triangle', 0.08, -180),
   bell: () => { tone(880, 0.4, 'sine', 0.12); tone(1320, 0.5, 'sine', 0.06, 0, 0.02); },
 };
 
@@ -1746,11 +1817,321 @@ function drop() {
   hanging = null; slings.visible = false;
   sfx.drop();
 }
+// =========================================================
+//   Streaks, overtime (fever), boosts, intruders and feedback
+// =========================================================
+const COMBO_WINDOW = 6.5, FEVER_AT = 6, FEVER_TIME = 10;
+let comboT = 0, feverT = 0, feverBeat = 0, slowT = 0, nextIntruderAt = 7, nextBoostAt = 5;
+const boosts = { laser: 0, weight: 0, pay: 0 };
+const BOOSTS = {
+  laser: { time: 15, color: '#ff3b30' }, weight: { time: 15, color: '#3b82f6' },
+  pay: { time: 20, color: '#22c55e' }, rebar: { time: 0, color: '#ff8a1a' },
+};
+const perfectTol = () => (boosts.laser > 0 ? 0.42 : feverT > 0 ? 0.3 : 0.13);
+const coinBoost = () => (feverT > 0 ? 3 : 1) * (boosts.pay > 0 ? 2 : 1);
+const slowMo = s => { if (!REDUCED) slowT = Math.max(slowT, s); };
+
+function showAlert(text) { const el = $('alert'); el.textContent = text; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
+function stampFloor(n) {
+  $('stampNum').textContent = t('floorN', n); $('stampTxt').textContent = t('inspected');
+  const el = $('stamp'); el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  setTimeout(sfx.stamp, 180); setTimeout(() => { shake = Math.max(shake, 0.08); }, 180);
+}
+function startFever() {
+  if (state !== 'playing') return;
+  feverT = FEVER_TIME; feverBeat = 0;
+  showCombo(t('fever'), t('feverSub')); sfx.horn(); slowMo(0.35);
+  $('feverFx').classList.add('on');
+}
+function endFever() {
+  feverT = 0; $('feverFx').classList.remove('on');
+  STYLE_SEQ.forEach(k => { FACADES[k].emissive.setRGB(0, 0, 0); });
+}
+function refreshStreakUi() {
+  const el = $('streak'), on = state === 'playing' && (combo >= 2 || feverT > 0);
+  if (el.hidden === on) el.hidden = !on;
+  if (!on) return;
+  el.classList.toggle('fever', feverT > 0);
+  $('streakLbl').textContent = feverT > 0 ? t('fever') : t('streak');
+  $('streakNum').textContent = '×' + Math.min(10, Math.max(1, combo)) * coinBoost();
+  $('streakFill').style.transform = `scaleX(${feverT > 0 ? feverT / FEVER_TIME : clamp(comboT / COMBO_WINDOW, 0, 1)})`;
+}
+function refreshChips() {
+  const html = Object.keys(boosts).filter(k => boosts[k] > 0)
+    .map(k => `<div class="chip" style="--c:${BOOSTS[k].color}">${t('b_' + k)}<b>${Math.ceil(boosts[k])} s</b></div>`).join('');
+  const el = $('chips'); if (el.innerHTML !== html) el.innerHTML = html;
+}
+
+// ---- concrete dust when a floor sets down
+const dustMats = Array.from({ length: 14 }, () => new THREE.SpriteMaterial({ map: cloudTex, color: C('#d8d0c2'), transparent: true, depthWrite: false, opacity: 0 }));
+const dust = dustMats.map(m => { const sp = new THREE.Sprite(m); sp.visible = false; scene.add(sp); return { sp, t: 1, v: new THREE.Vector3() }; });
+let dustIdx = 0;
+function puffDust(rect, y, n = 8) {
+  for (let i = 0; i < n; i++) {
+    const d = dust[dustIdx++ % dust.length], a = Math.random() * Math.PI * 2;
+    const ex = Math.cos(a), ez = Math.sin(a);
+    d.sp.position.set(rect.x + ex * rect.w * 0.55, y, rect.z + ez * rect.d * 0.55);
+    d.v.set(ex * rand(0.6, 1.4), rand(0.2, 0.6), ez * rand(0.6, 1.4)); d.t = 0; d.sp.visible = true;
+  }
+}
+
+// ---- coins fly from the tower to the counter
+function flyCoins(n) {
+  const from = V1.set(top.x, level + 0.5, top.z).project(camera), dest = $('coinNum').getBoundingClientRect();
+  if (from.z > 1 || !dest.width) return;
+  const x0 = (from.x + 1) / 2 * innerWidth, y0 = (1 - from.y) / 2 * innerHeight;
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('i'); c.className = 'coin flycoin';
+    c.style.transform = `translate(${x0 + rand(-14, 14)}px, ${y0 + rand(-10, 10)}px)`;
+    document.body.appendChild(c);
+    setTimeout(() => { c.style.transitionDelay = `${i * 0.05}s, ${0.5 + i * 0.05}s`; c.style.transform = `translate(${dest.left + dest.width / 2}px, ${dest.top + dest.height / 2}px) scale(.8)`; c.style.opacity = 0; }, 30);
+    setTimeout(() => c.remove(), 1100 + i * 50);
+  }
+}
+
+// ---- boosts: floating tool crates you touch with the hanging block
+function boostTex(kind) {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = BOOSTS[kind].color; g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 8; g.strokeRect(4, 4, 120, 120);
+    g.fillStyle = '#fff'; g.strokeStyle = '#fff'; g.lineWidth = 7; g.lineCap = 'round';
+    if (kind === 'laser') { // spirit level with a beam
+      g.strokeRect(22, 50, 84, 28); g.beginPath(); g.arc(64, 64, 7, 0, 7); g.fill();
+      g.beginPath(); g.moveTo(14, 98); g.lineTo(114, 98); g.stroke();
+    } else if (kind === 'weight') { // counterweight
+      g.beginPath(); g.moveTo(34, 104); g.lineTo(94, 104); g.lineTo(84, 50); g.lineTo(44, 50); g.closePath(); g.fill();
+      g.beginPath(); g.arc(64, 38, 12, 0, 7); g.stroke();
+      g.fillStyle = BOOSTS[kind].color; g.font = 'bold 26px Arial Black, sans-serif'; g.textAlign = 'center'; g.fillText('KG', 64, 90);
+    } else if (kind === 'pay') { // coin x2
+      g.beginPath(); g.arc(64, 64, 40, 0, 7); g.stroke();
+      g.font = 'bold 40px Arial Black, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('×2', 64, 67);
+    } else { // rebar grid
+      for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(30 + i * 34, 22); g.lineTo(30 + i * 34, 106); g.stroke(); g.beginPath(); g.moveTo(22, 30 + i * 34); g.lineTo(106, 30 + i * 34); g.stroke(); }
+    }
+  });
+}
+const BOOST_MATS = Object.fromEntries(Object.keys(BOOSTS).map(k => [k, new THREE.MeshStandardMaterial({ map: boostTex(k), emissive: C('#ffffff'), emissiveMap: null, emissiveIntensity: 0.15, roughness: 0.45 })]));
+const boostGeo = new THREE.BoxGeometry(0.55, 0.55, 0.55);
+let boostItem = null;
+function spawnBoost() {
+  const h = towerHealth();
+  const bag = h < 0.55 ? ['rebar', 'rebar', 'weight', 'laser', 'pay'] : ['laser', 'weight', 'pay', 'laser', 'weight', 'pay', 'rebar'];
+  const kind = bag[Math.floor(Math.random() * bag.length)];
+  let x = 0, z = 0;
+  for (let i = 0; i < 20; i++) { x = rand(-LIM + 0.4, LIM - 0.4); z = rand(-LIM + 0.4, LIM - 0.4); if (Math.hypot(x - bob.x, z - bob.y) > 1.6) break; }
+  const g = new THREE.Group();
+  const box = new THREE.Mesh(boostGeo, BOOST_MATS[kind]); g.add(box);
+  const glow = glowSprite(BOOSTS[kind].color, 2.2, 0.7); g.add(glow);
+  g.position.set(x, level + 2, z); g.scale.setScalar(0.01); scene.add(g);
+  boostItem = { g, box, kind, left: 4, t: 0 };
+}
+function removeBoostItem() { if (boostItem) { scene.remove(boostItem.g); boostItem = null; } }
+function collectBoost() {
+  const kind = boostItem.kind, pos = boostItem.g.position.clone();
+  removeBoostItem();
+  sfx.boost(); slowMo(0.2);
+  puffDust({ x: pos.x, z: pos.z, w: 0.6, d: 0.6 }, pos.y, 6);
+  showCombo(t('b_' + kind), t('b_' + kind + 'D'));
+  if (kind === 'rebar') {
+    if (top.mesh) {
+      const cap = capSize(level);
+      top.w = Math.max(top.w, Math.min(cap, 2 * (BASE / 2 - Math.abs(top.x))));
+      top.d = Math.max(top.d, Math.min(cap, 2 * (BASE / 2 - Math.abs(top.z))));
+      top.mesh.geometry.dispose(); top.mesh.geometry = boxGeo(top.w, H, top.d);
+      pops.push({ m: top.mesh, t: 0 });
+    }
+    cur = { w: Math.min(top.w, capSize(level)), d: Math.min(top.d, capSize(level)) };
+    if (hanging && !falling) { hookGroup.remove(hanging); hanging.geometry.dispose(); spawnHanging(); }
+    setLiftHealth(towerHealth());
+  } else boosts[kind] = BOOSTS[kind].time;
+}
+// laser level: red beams up the corners of the top floor
+const laserMat = new THREE.MeshBasicMaterial({ color: C('#ff2a1a'), transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false });
+const laserBeams = [0, 1, 2, 3].map(() => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1, 0.03), laserMat); m.visible = false; scene.add(m); return m; });
+
+// ---- intruders crossing the roof: shoot them down with a block, or they break a piece of the top floor
+function makeIntruder(kind) {
+  const g = new THREE.Group(), parts = {};
+  if (kind === 'pigeon') {
+    const grey = std('#8d949c', 0.8), dark = std('#5f6670', 0.7);
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), grey); body.scale.set(1.4, 0.9, 1); g.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 8), dark); head.position.set(0.28, 0.1, 0); g.add(head);
+    const neck = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), std('#3e7d6a', 0.3, 0.4)); neck.position.set(0.2, 0.04, 0); g.add(neck);
+    const beak = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.09, 6), std('#e0a13a', 0.6)); beak.rotation.z = -Math.PI / 2; beak.position.set(0.41, 0.09, 0); g.add(beak);
+    parts.wings = [-1, 1].map(sg => { const pv = new THREE.Group(); pv.position.set(0, 0.06, 0.1 * sg); const w = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.025, 0.42), grey); w.position.z = 0.21 * sg; pv.add(w); g.add(pv); return { pv, sg }; });
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.03, 0.16), dark); tail.position.set(-0.3, 0.02, 0); g.add(tail);
+  } else if (kind === 'drone') {
+    const dark = std('#2b2e35', 0.4, 0.5);
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.12, 0.34), dark));
+    parts.rotors = [];
+    [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([a, b]) => {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.04, 0.04), dark); arm.position.set(a * 0.18, 0.03, b * 0.18); arm.rotation.y = a * b > 0 ? -Math.PI / 4 : Math.PI / 4; g.add(arm);
+      const r = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.012, 16), std('#9aa3ad', 0.3, 0.6, { transparent: true, opacity: 0.55 })); r.position.set(a * 0.3, 0.09, b * 0.3); g.add(r); parts.rotors.push(r);
+    });
+    const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshBasicMaterial({ color: C('#ff2a1a') })); led.position.set(0.18, 0, 0); g.add(led);
+  } else if (kind === 'junk') {
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.3, 0.3), std('#d9b04a', 0.3, 0.9)));
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.02, 0.3), std('#1f3c7a', 0.25, 0.6)); panel.position.x = 0.5; panel.rotation.x = 0.6; g.add(panel);
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 5), std('#cccccc', 0.4, 0.6)); ant.position.set(-0.1, 0.3, 0); ant.rotation.z = 0.5; g.add(ant);
+  } else if (kind === 'meteor') {
+    const geo = new THREE.DodecahedronGeometry(0.3, 1), pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) pos.setXYZ(k, pos.getX(k) * rand(0.8, 1.2), pos.getY(k) * rand(0.8, 1.2), pos.getZ(k) * rand(0.8, 1.2));
+    geo.computeVertexNormals();
+    const rock = std('#6b5d52', 0.95); rock.flatShading = true;
+    g.add(new THREE.Mesh(geo, rock));
+    const fire = glowSprite('#ff7a2a', 1.6, 0.85); fire.position.x = -0.35; g.add(fire);
+    const trail = glowSprite('#ffb04a', 1.1, 0.5); trail.position.x = -0.8; g.add(trail);
+  } else { // glitch
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: C('#ff3cf0'), wireframe: true })));
+    parts.core = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.28), new THREE.MeshBasicMaterial({ color: C('#3cf0ff') })); g.add(parts.core);
+  }
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return { g, parts };
+}
+const intruders = [];
+const intruderKind = lv => lv < 12 ? 'pigeon' : lv < 24 ? 'drone' : lv < 48 ? 'junk' : lv < 92 ? 'meteor' : 'glitch';
+function spawnIntruder() {
+  const kind = intruderKind(level), { g, parts } = makeIntruder(kind);
+  // cross the screen roughly left-right, aimed at a spot on the roof
+  const a = rand(-0.45, 0.45), sgn = Math.random() < 0.5 ? -1 : 1;
+  const dir = new THREE.Vector2(RIGHT.x * Math.cos(a) - RIGHT.y * Math.sin(a), RIGHT.x * Math.sin(a) + RIGHT.y * Math.cos(a)).multiplyScalar(sgn);
+  const aim = new THREE.Vector2(top.x + rand(-0.35, 0.35) * top.w, top.z + rand(-0.35, 0.35) * top.d);
+  const speed = kind === 'meteor' ? 5 : kind === 'pigeon' ? 3.6 : 4.2;
+  g.position.set(aim.x - dir.x * 13, level + 0.45, aim.y - dir.y * 13);
+  g.rotation.y = Math.atan2(-dir.y, dir.x);
+  scene.add(g);
+  intruders.push({ g, parts, kind, v: new THREE.Vector3(dir.x * speed, 0, dir.y * speed), hit: false, dead: false, life: 0, spin: new THREE.Vector3() });
+  showAlert(t('incoming', t('i_' + kind))); sfx.warn();
+}
+function killIntruder(it, byPlayer) {
+  it.dead = true; it.life = 0;
+  it.v.set(it.v.x * 0.3 + rand(-1, 1), byPlayer ? 3.5 : 2, it.v.z * 0.3 + rand(-1, 1));
+  it.spin.set(rand(-9, 9), rand(-9, 9), rand(-9, 9));
+  puffDust({ x: it.g.position.x, z: it.g.position.z, w: 0.5, d: 0.5 }, it.g.position.y, 6);
+  if (byPlayer) {
+    sfx.pop(); slowMo(0.45); shake = Math.max(shake, 0.1);
+    const bonus = godUsed ? 0 : rollCoin(level).value * 5 * coinBoost();
+    if (bonus) { profile.coins += bonus; runCoins += bonus; saveProfile(); updateCoinsUi(); flyCoins(6); }
+    showCombo(t('shotDown'), bonus ? `+${bonus}` : t('i_' + it.kind));
+  }
+}
+function breakRoof(it) { // the intruder smashes the side of the top floor it flies into
+  it.hit = true;
+  sfx.crash(); shake = Math.max(shake, 0.2); slowMo(0.35);
+  showCombo(t('crack'), t('crackSub'));
+  if (top.mesh && level > 0) {
+    const vx = it.v.x, vz = it.v.z, y = level - H / 2;
+    if (Math.abs(vx) >= Math.abs(vz)) {
+      const c = clamp(rand(0.35, 0.6), 0, top.w - 0.6);
+      if (c > 0.05) {
+        const x0 = vx > 0 ? top.x - top.w / 2 : top.x + top.w / 2 - c;
+        shatter(x0, x0 + c, top.z - top.d / 2, top.z + top.d / 2, y, level, top.x, top.z);
+        top.w -= c; top.x += vx > 0 ? c / 2 : -c / 2;
+      }
+    } else {
+      const c = clamp(rand(0.35, 0.6), 0, top.d - 0.6);
+      if (c > 0.05) {
+        const z0 = vz > 0 ? top.z - top.d / 2 : top.z + top.d / 2 - c;
+        shatter(top.x - top.w / 2, top.x + top.w / 2, z0, z0 + c, y, level, top.x, top.z);
+        top.d -= c; top.z += vz > 0 ? c / 2 : -c / 2;
+      }
+    }
+    top.mesh.geometry.dispose(); top.mesh.geometry = boxGeo(top.w, H, top.d);
+    top.mesh.position.set(top.x, y, top.z);
+    cur = { w: Math.min(cur.w, top.w), d: Math.min(cur.d, top.d) };
+    setLiftHealth(towerHealth());
+  }
+  killIntruder(it, false);
+}
+// The falling block sweeps a long way in one frame, so test the whole stretch it covered (y0 -> now)
+function hitIntruders(f, y0) {
+  const m = f.m.position;
+  for (const it of intruders) {
+    if (it.dead) continue;
+    const p = it.g.position;
+    if (Math.abs(m.x - p.x) < f.w / 2 + 0.4 && Math.abs(m.z - p.z) < f.d / 2 + 0.4 && p.y <= y0 + H / 2 + 0.4 && p.y >= m.y - H / 2 - 0.4) killIntruder(it, true);
+  }
+}
+function clearJuice() {
+  combo = 0; comboT = 0; slowT = 0; endFever();
+  Object.keys(boosts).forEach(k => { boosts[k] = 0; });
+  removeBoostItem();
+  intruders.forEach(it => scene.remove(it.g)); intruders.length = 0;
+  nextIntruderAt = 6 + Math.floor(rand(0, 3)); nextBoostAt = 4 + Math.floor(rand(0, 3));
+  laserBeams.forEach(b => { b.visible = false; });
+  $('streak').hidden = true; $('chips').innerHTML = '';
+}
+function updateJuice(dt) {
+  const playing = state === 'playing';
+  // streak timer
+  if (playing && combo > 0 && !falling && warpT < 0) {
+    comboT -= dt;
+    if (comboT <= 0) { if (combo >= 2) { showAlert(t('streakLost')); sfx.lost(); } combo = 0; }
+  }
+  // overtime
+  if (feverT > 0 && playing) {
+    feverT -= dt; feverBeat -= dt;
+    if (feverBeat <= 0) { feverBeat = 0.42; sfx.kick(); }
+    const glow = 0.16 + 0.1 * Math.sin(time * 15);
+    STYLE_SEQ.forEach(k => { FACADES[k].emissive.setRGB(1, 0.32, 0.05).multiplyScalar(glow); });
+    if (feverT <= 0) { endFever(); showAlert(t('feverEnd')); }
+  }
+  if (playing) Object.keys(boosts).forEach(k => { if (boosts[k] > 0) boosts[k] = Math.max(0, boosts[k] - dt); });
+  // laser beams on the top corners
+  const laserOn = playing && boosts.laser > 0;
+  laserBeams.forEach((b, i) => {
+    b.visible = laserOn; if (!laserOn) return;
+    b.position.set(top.x + (i % 2 ? 1 : -1) * top.w / 2, level + 1.3, top.z + (i < 2 ? 1 : -1) * top.d / 2); b.scale.y = 2.6;
+  });
+  laserMat.opacity = 0.6 + 0.3 * Math.sin(time * 20);
+  // boost crate
+  if (boostItem) {
+    const b = boostItem; b.t += dt;
+    b.g.scale.setScalar(Math.min(1, b.t * 3));
+    b.g.position.y = craneY + 2 + Math.sin(time * 2.5) * 0.12;
+    b.box.rotation.y += dt * 1.6; b.box.rotation.x = Math.sin(time * 1.3) * 0.3;
+    if (hanging && playing && spawnAnim >= 1) {
+      hanging.getWorldPosition(V3);
+      if (Math.abs(V3.x - b.g.position.x) < cur.w / 2 + 0.3 && Math.abs(V3.z - b.g.position.z) < cur.d / 2 + 0.3 && Math.abs(V3.y - b.g.position.y) < 0.9) collectBoost();
+    }
+  }
+  // intruders
+  for (let i = intruders.length - 1; i >= 0; i--) {
+    const it = intruders[i], p = it.g.position;
+    it.life += dt;
+    if (it.dead) {
+      it.v.y -= 20 * dt; p.addScaledVector(it.v, dt);
+      it.g.rotation.x += it.spin.x * dt; it.g.rotation.z += it.spin.z * dt;
+      if (it.life > 3) { scene.remove(it.g); intruders.splice(i, 1); }
+      continue;
+    }
+    p.x += it.v.x * dt; p.z += it.v.z * dt;
+    p.y += (level + 0.45 - p.y) * Math.min(1, dt * 4);
+    if (it.parts.wings) it.parts.wings.forEach(({ pv, sg }) => { pv.rotation.x = Math.sin(time * 16) * 0.7 * sg; });
+    if (it.parts.rotors) it.parts.rotors.forEach(r => { r.rotation.y += dt * 40; });
+    if (it.parts.core) { it.parts.core.visible = Math.random() > 0.15; it.g.position.y += rand(-0.03, 0.03); }
+    if (it.kind === 'junk' || it.kind === 'meteor') { it.g.rotation.x += dt * 1.5; it.g.rotation.z += dt * 1.1; }
+    // hits the roof
+    if (!it.hit && playing && Math.abs(p.x - top.x) < top.w / 2 + 0.2 && Math.abs(p.z - top.z) < top.d / 2 + 0.2) { breakRoof(it); continue; }
+    if (Math.hypot(p.x - top.x, p.z - top.z) > 16) { scene.remove(it.g); intruders.splice(i, 1); }
+  }
+  // dust
+  for (const d of dust) {
+    if (d.t >= 1) continue;
+    d.t = Math.min(1, d.t + dt / 0.9);
+    d.sp.position.addScaledVector(d.v, dt); d.v.multiplyScalar(1 - dt * 2);
+    const sc = 0.5 + d.t * 1.6; d.sp.scale.set(sc, sc * 0.7, 1);
+    d.sp.material.opacity = 0.75 * (1 - d.t);
+    if (d.t >= 1) d.sp.visible = false;
+  }
+  refreshStreakUi();
+}
+
 function land() {
   const f = falling; falling = null;
   const m = f.m, tp = top, w = f.w, d = f.d;
   let cx = m.position.x, cz = m.position.z, perfect = false;
-  const tol = 0.13;
+  const tol = perfectTol();
   if (settings.god || (Math.abs(cx - tp.x) < tol && Math.abs(cz - tp.z) < tol)) { perfect = true; cx = tp.x; cz = tp.z; }
   const l = Math.max(cx - w / 2, tp.x - tp.w / 2), r = Math.min(cx + w / 2, tp.x + tp.w / 2);
   const bk = Math.max(cz - d / 2, tp.z - tp.d / 2), fr = Math.min(cz + d / 2, tp.z + tp.d / 2);
@@ -1775,8 +2156,11 @@ function land() {
   top = { x: px, z: pz, w: ow, d: od, mesh: placed };
   shake = Math.max(shake, 0.12);
   sfx.place();
+  puffDust(top, level - H + 0.1, perfect ? 10 : 7);
+  const nearMiss = !perfect && ow * od < 0.3 * w * d;
   if (perfect) {
-    combo++;
+    combo++; comboT = COMBO_WINDOW;
+    if (combo === FEVER_AT || (combo > FEVER_AT && (combo - FEVER_AT) % 6 === 0)) setTimeout(startFever, 450);
     let grew = false;
     if (combo >= 3) {
       const cap = capSize(level);
@@ -1797,10 +2181,16 @@ function land() {
     showCombo(combo > 1 ? `${t('perfect')} ×${combo}` : t('perfect'), grew ? t('grows') : '');
     cheer = 1;
   } else {
-    combo = 0;
+    if (combo >= 2) showAlert(t('streakLost'));
+    combo = 0; comboT = 0;
     if (cut) sfx.cut();
+    if (nearMiss) { showCombo(t('nearMiss'), ''); slowMo(0.5); tone(1568, 0.2, 'triangle', 0.08, -600); }
   }
   awardCoins(perfect);
+  if (level % 10 === 0) stampFloor(level);
+  if (boostItem && --boostItem.left <= 0) removeBoostItem();
+  if (!boostItem && level >= nextBoostAt) { spawnBoost(); nextBoostAt = level + 7 + Math.floor(rand(0, 5)); }
+  if (level >= nextIntruderAt && !intruders.some(it => !it.dead) && level < DIM_LV + 200) { spawnIntruder(); nextIntruderAt = level + 4 + Math.floor(rand(0, 4)); }
   const cap = capSize(level);
   cur = { w: Math.min(top.w, cap), d: Math.min(top.d, cap) };
   spawnTimer = 0.32;
@@ -1869,7 +2259,7 @@ let coinMatIdx = 0, ringMatIdx = 0;
 const coinGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.07, 32), gemGeo = new THREE.OctahedronGeometry(0.32, 0);
 function awardCoins(perfect) {
   if (godUsed) return;
-  const type = rollCoin(level), mult = perfect ? Math.min(10, Math.max(1, combo)) : 1, gain = type.value * mult;
+  const type = rollCoin(level), mult = (perfect ? Math.min(10, Math.max(1, combo)) : 1) * coinBoost(), gain = type.value * mult;
   profile.coins += gain; runCoins += gain; saveProfile();
   const mat = coinMatPool[coinMatIdx++ % coinMatPool.length];
   mat.color.copy(C(type.color)); mat.emissive.copy(C(type.color)); mat.metalness = type.name === 'diamante' ? 0.3 : 0.95; mat.opacity = 1;
@@ -1881,6 +2271,7 @@ function awardCoins(perfect) {
   el.innerHTML = `+${gain}` + (mult > 1 ? `<small>${type.value} × ${mult}</small>` : type.value > 1 ? `<small>${t('coin_' + type.name)}</small>` : '');
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   tone(1318, 0.08, 'square', 0.04); tone(1976, 0.12, 'square', 0.035, 0, 0.06);
+  flyCoins(Math.min(7, 1 + Math.floor(gain / 3)));
   if (type.value >= 5) tone(2637, 0.18, 'triangle', 0.05, 0, 0.12);
   updateCoinsUi();
 }
@@ -1888,7 +2279,7 @@ function updateCoinsUi() {
   $('coinNum').textContent = profile.coins; $('titleCoins').textContent = profile.coins; $('shopCoins').textContent = profile.coins;
 }
 function gameOver() {
-  state = 'over'; combo = 0;
+  state = 'over'; combo = 0; endFever(); $('streak').hidden = true; $('chips').innerHTML = '';
   overT = 0; viewing = false; orbitYaw = 0; viewZoom = 1; viewY = level * 0.5 + 1.5;
   sfx.over();
   knockWorker();
@@ -1920,6 +2311,7 @@ function resetTower() {
   coinFx.forEach(c => scene.remove(c.m)); coinFx.length = 0;
   top = { x: 0, z: 0, w: BASE, d: BASE, mesh: null };
   cur = { w: BASE, d: BASE };
+  clearJuice();
   setLiftHealth(1, true);
   spawnHanging(); spawnAnim = 1; hanging.scale.setScalar(1);
   updateHud();
@@ -2401,10 +2793,10 @@ function update(dt) {
     const ka = ease(10);
     trolleyV.x += (sx - trolleyV.x) * ka; trolleyV.y += (sz - trolleyV.y) * ka;
     trolley.x += trolleyV.x * dt; trolley.y += trolleyV.y * dt;
-    windS = state === 'playing' && level >= 5 ? Math.min(4.6, (level - 4) * 0.1 + 0.3) : 0;
+    windS = state === 'playing' && level >= 5 && boosts.weight <= 0 ? Math.min(4.6, (level - 4) * 0.1 + 0.3) : 0;
     const wa = time * 0.06 + level * 0.55, gust = 0.75 + 0.25 * Math.sin(time * 0.9) + 0.2 * Math.sin(time * 2.7 + 1.3);
     windX = Math.cos(wa) * windS * gust; windZ = Math.sin(wa) * windS * gust;
-    const damp = kf(DAMP, level), n = 4, h = dt / n;
+    const damp = boosts.weight > 0 ? 7 : kf(DAMP, level), n = 4, h = dt / n;
     for (let i = 0; i < n; i++) {
       const ax = -PEND_K * (bob.x - trolley.x) - damp * (bobV.x - trolleyV.x) + windX;
       const az = -PEND_K * (bob.y - trolley.y) - damp * (bobV.y - trolleyV.y) + windZ;
@@ -2436,7 +2828,9 @@ function update(dt) {
     if (!hanging && !falling && state === 'playing') { spawnTimer -= dt; if (spawnTimer <= 0) spawnHanging(); }
     if (falling) {
       const m = falling.m;
+      const y0 = m.position.y;
       falling.vy -= 45 * dt; m.position.y += falling.vy * dt;
+      hitIntruders(falling, y0);
       m.rotation.x *= 0.85; m.rotation.z *= 0.85;
       if (m.position.y - H / 2 <= level) { m.position.y = level + H / 2; land(); }
     }
@@ -2467,6 +2861,8 @@ function update(dt) {
     }
   }
 
+  if (state !== 'paused') updateJuice(dt);
+
   // ---- touch joystick
   const padOn = state === 'playing' && usePad();
   if ($('pad').hidden === padOn) { $('pad').hidden = !padOn; document.body.classList.toggle('pad-on', padOn); if (!padOn) padReset(); }
@@ -2485,7 +2881,7 @@ function update(dt) {
     guide.position.set(V1.x, level + 0.02, V1.z);
     const s = hanging.scale.x;
     guide.scale.set(cur.w * s / 2 / Math.SQRT1_2, cur.d * s / 2 / Math.SQRT1_2, 1);
-    const aligned = settings.god || (Math.abs(V1.x - top.x) < 0.13 && Math.abs(V1.z - top.z) < 0.13);
+    const aligned = settings.god || (Math.abs(V1.x - top.x) < perfectTol() && Math.abs(V1.z - top.z) < perfectTol());
     guideMat.color.copy(aligned ? C('#ffc21a') : C('#ffffff')); guideMat.opacity = aligned ? 0.95 : 0.55;
   } else guide.visible = false;
 
@@ -2582,8 +2978,9 @@ function update(dt) {
       worker.head.rotation.y = Math.sin(time * 5) * 0.5;
       worker.torso.rotation.x = 0.12;
     } else {
-      worker.armL.rotation.set(0, 0, cheer > 0 ? -2.8 : -0.1 + Math.sin(time * 1.3) * 0.04);
-      worker.head.rotation.y *= 0.9; worker.torso.rotation.x = 0;
+      worker.armL.rotation.set(0, 0, cheer > 0 ? -2.8 : feverT > 0 ? -1.6 + Math.sin(time * 15) * 1.1 : -0.1 + Math.sin(time * 1.3) * 0.04);
+      worker.head.rotation.y = feverT > 0 ? Math.sin(time * 7.5) * 0.35 : worker.head.rotation.y * 0.9; worker.torso.rotation.x = 0;
+      if (feverT > 0) worker.root.position.y = Math.abs(Math.sin(time * 7.5)) * 0.12;
     }
     lift.updateMatrixWorld(true);
     worker.armR.lookAt(pointAt);
@@ -2725,7 +3122,7 @@ function update(dt) {
   anims.forEach(fn => fn(dt, time));
 
   windUiT -= dt;
-  if (windUiT <= 0) { windUiT = 0.25; updateWindUi(); }
+  if (windUiT <= 0) { windUiT = 0.25; updateWindUi(); refreshChips(); }
 }
 
 /* =========================================================
@@ -2741,16 +3138,20 @@ applyLang();
 {
   const warm = new THREE.Group();
   warm.add(new THREE.Mesh(coinGeo, coinMatPool[0]), new THREE.Mesh(gemGeo, coinMatPool[1]), new THREE.Mesh(ringGeo, ringMatPool[0]));
+  Object.values(BOOST_MATS).forEach(m => warm.add(new THREE.Mesh(boostGeo, m)));
+  laserBeams.forEach(b => { b.visible = true; }); dust.forEach(d => { d.sp.visible = true; });
   scene.add(warm);
   try { renderer.compile(scene, camera); } catch (e) { /* compiling ahead is only an optimisation */ }
   scene.remove(warm);
+  laserBeams.forEach(b => { b.visible = false; }); dust.forEach(d => { d.sp.visible = false; });
 }
 goTitle();
 camPos.set(24, 7.5, 18);
 let last = performance.now();
 function frame(now) {
   const dt = clamp((now - last) / 1000, 0, 0.05); last = now; // rAF time can be earlier than the boot timestamp
-  update(dt);
+  slowT = Math.max(0, slowT - dt);
+  update(slowT > 0 ? dt * 0.3 : dt); // brief slow motion on big moments
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
