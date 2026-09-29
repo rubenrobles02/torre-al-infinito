@@ -331,7 +331,7 @@
   #fade.out { opacity: 0; }
   /* ---------- boss health bar ---------- */
   #bossBar {
-    position: fixed; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top, 0px) + 158px);
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
     width: min(340px, calc(100% - 32px)); background: rgba(18,19,23,.9); border-top: 4px solid #ff3b30; padding: 8px 12px 10px;
     display: grid; gap: 6px; pointer-events: none;
   }
@@ -340,6 +340,8 @@
   #bossPips i { height: 12px; background: #ff3b30; box-shadow: 0 0 8px rgba(255,59,48,.6); transition: background .2s ease, box-shadow .2s ease; }
   #bossPips i.off { background: #33363f; box-shadow: none; }
   #bossBar.hit { animation: bosshit .35s ease; }
+  body.pad-on #bossBar { bottom: calc(env(safe-area-inset-bottom, 0px) + 160px); width: min(300px, calc(100% - 32px)); }
+  body.boss-on #alert { bottom: calc(env(safe-area-inset-bottom, 0px) + 250px); }
   @keyframes bosshit { 0%, 100% { transform: translateX(-50%); } 25% { transform: translateX(calc(-50% - 8px)); } 75% { transform: translateX(calc(-50% + 8px)); } }
   /* ---------- phones: compact HUD, pop-ups away from the tower top ---------- */
   @media (max-width: 520px) {
@@ -677,7 +679,7 @@ const STR = {
     i_pigeon: 'Paloma', i_drone: 'Dron', i_junk: 'Chatarra espacial', i_meteor: 'Meteorito', i_glitch: 'Glitch',
     ufoIncoming: '¡Un inspector alienígena! Devuélvele sus órdenes de demolición con la carga', returned: '¡DEVUELTA!', returnedSub: 'Al remitente',
     bossName: 'EL SUPERVISOR SUPREMO', bossWarn: '¡Se acerca algo por detrás de la Tierra!', bossIntro: 'Golpea sus bolas de fuego balanceando la carga: devuélvele 6 para seguir construyendo',
-    bossHit: n => `¡TOMA! ${n}/6`, bossMiss: '¡AY!', bossMissSub: 'Golpéala con más impulso: mueve la grúa cuando llegue', bossWin: '¡JEFE DERROTADO!', bossWinSub: n => `+${n} monedas`,
+    bossHit: n => `¡TOMA! ${n}/6`, bossMiss: '¡AY!', bossMissSub: 'Te ha quemado un trozo de la pieza · golpéala con más impulso', bossWin: '¡JEFE DERROTADO!', bossWinSub: n => `+${n} monedas`,
     appeal: '¡RECURSO ACEPTADO!', demolished: '¡ORDEN DE DEMOLICIÓN!', demolishedSub: 'Te han demolido un trozo de la planta', ufoGone: 'El inspector se marcha',
     windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
     equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
@@ -726,7 +728,7 @@ const STR = {
     i_pigeon: 'Pigeon', i_drone: 'Drone', i_junk: 'Space junk', i_meteor: 'Meteorite', i_glitch: 'Glitch',
     ufoIncoming: 'An alien inspector! Bat its demolition orders back with your load', returned: 'RETURNED!', returnedSub: 'Back to sender',
     bossName: 'THE SUPREME SUPERVISOR', bossWarn: 'Something is rising behind the Earth!', bossIntro: 'Swing your load into its fireballs: bat 6 of them back to keep building',
-    bossHit: n => `TAKE THAT! ${n}/6`, bossMiss: 'OUCH!', bossMissSub: 'Hit it harder: move the crane as it arrives', bossWin: 'BOSS DEFEATED!', bossWinSub: n => `+${n} coins`,
+    bossHit: n => `TAKE THAT! ${n}/6`, bossMiss: 'OUCH!', bossMissSub: 'It burned a piece off your load · hit it harder', bossWin: 'BOSS DEFEATED!', bossWinSub: n => `+${n} coins`,
     appeal: 'APPEAL GRANTED!', demolished: 'DEMOLITION ORDER!', demolishedSub: 'A piece of your floor was torn down', ufoGone: 'The inspector flies off',
     windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
     equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
@@ -2265,17 +2267,46 @@ function startBoss() {
   intruders.forEach(it => scene.remove(it.g)); intruders.length = 0;
   removeUfo(); orders.forEach(o => scene.remove(o.m)); orders.length = 0; removeBoostItem();
   const b = makeBoss(); scene.add(b.g);
-  boss = { ...b, hp: BOSS_HP, t: 0, phase: 'rise', cd: 1.2, charge: 0, flash: 0, dying: 0, base: behind(26, 0, level + 8) };
+  boss = { ...b, hp: BOSS_HP, t: 0, phase: 'rise', cd: 0.6, charge: 0, flash: 0, dying: 0, recoil: 0, base: behind(26, 0, level + 8) };
   b.g.position.set(boss.base.x, level - 26, boss.base.z);
-  $('bossName').textContent = t('bossName'); setBossPips(); $('bossBar').hidden = false;
+  $('bossName').textContent = t('bossName'); setBossPips(); $('bossBar').hidden = false; document.body.classList.add('boss-on');
   showAlert(t('bossWarn')); sfx.warn();
-  tone(48, 3.2, 'sawtooth', 0.12, 30); noise(3, 0.12, 120, 0, 'lowpass');
+  tone(48, 2.2, 'sawtooth', 0.12, 30); noise(2.2, 0.12, 120, 0, 'lowpass');
+  musicStart();
   setTimeout(() => { if (boss && boss.phase !== 'dead') showBanner({ name: { es: t('bossName'), en: t('bossName') }, sub: { es: t('bossIntro'), en: t('bossIntro') } }); }, 2600);
 }
+const bossMusic = { on: false, next: 0, step: 0, timer: 0 };
+const CHORDS = [ // root (bass) and triad (lead) per bar: Am, F, G, Em
+  { root: 110, tri: [440, 523.25, 659.25] }, { root: 87.31, tri: [349.23, 440, 523.25] },
+  { root: 98, tri: [392, 493.88, 587.33] }, { root: 82.41, tri: [329.63, 392, 493.88] },
+];
+function musicStep(i, at, len) {
+  const a = actx; if (!a) return;
+  const d = Math.max(0, at - a.currentTime), bar = CHORDS[Math.floor(i / 8) % 4], b8 = i % 8, hot = boss && boss.hp <= 3;
+  const bassNote = [1, 1, 2, 1, 1, 1.5, 2, 1][b8] * bar.root;
+  tone(bassNote, len * 0.85, 'sawtooth', 0.07, 0, d);
+  if (b8 === 0 || b8 === 4 || (hot && b8 === 6)) tone(140, 0.14, 'sine', 0.3, -95, d);
+  if (b8 === 2 || b8 === 6) noise(0.12, 0.18, 1800, d);
+  if (hot || b8 % 2 === 1) noise(0.035, 0.06, 7500, d, 'highpass');
+  tone(bar.tri[[0, 1, 2, 1, 2, 0, 1, 2][b8]] * (hot && b8 % 2 ? 2 : 1), len * 0.8, 'square', 0.028, 0, d);
+}
+function musicTick() {
+  const a = actx; if (!a || !bossMusic.on) return;
+  if (state === 'paused' || a.state !== 'running') { bossMusic.next = a.currentTime + 0.1; return; }
+  const len = 60 / (boss && boss.hp <= 3 ? 158 : 142) / 2; // eighth notes
+  while (bossMusic.next < a.currentTime + 0.15) { musicStep(bossMusic.step++, bossMusic.next, len); bossMusic.next += len; }
+}
+function musicStart() {
+  const a = audio(); if (!a || bossMusic.on) return;
+  bossMusic.on = true; bossMusic.step = 0; bossMusic.next = a.currentTime + 0.1;
+  bossMusic.timer = setInterval(musicTick, 40);
+}
+function musicStop() { bossMusic.on = false; clearInterval(bossMusic.timer); }
 function removeBoss() {
+  musicStop();
   if (boss) scene.remove(boss.g);
   boss = null; fireballs.forEach(f => scene.remove(f.m)); fireballs.length = 0;
-  $('bossBar').hidden = true;
+  $('bossBar').hidden = true; document.body.classList.remove('boss-on');
 }
 function throwFireball() {
   const from = V3.set(0, 0.15, 1.9); boss.head.localToWorld(from);
@@ -2284,18 +2315,19 @@ function throwFireball() {
   const m = new THREE.Mesh(fireGeo, BOSS_MATS.fire);
   const g1 = glowSprite('#ff7a1a', 2.4, 0.95), g2 = glowSprite('#ffd24a', 1.2, 0.9); m.add(g1, g2);
   m.position.copy(from); scene.add(m);
-  const speed = 7 + (BOSS_HP - boss.hp) * 0.65;
+  const speed = 8.5 + (BOSS_HP - boss.hp) * 0.8;
   fireballs.push({ m, glow: g1, v: to.sub(from).normalize().multiplyScalar(speed), back: false, life: 0 });
   noise(0.35, 0.3, 700); tone(320, 0.45, 'square', 0.07, -220);
 }
 function bossHit() {
+  if (boss.phase !== 'fight') return; // a second returned fireball can arrive while it is already exploding
   boss.hp--; boss.flash = 1; setBossPips();
   const bar = $('bossBar'); bar.classList.remove('hit'); void bar.offsetWidth; bar.classList.add('hit');
   sfx.crash(); tone(70, 0.5, 'sawtooth', 0.14, -30); shake = Math.max(shake, 0.28); slowMo(0.5);
   if (combo > 0) comboT = COMBO_WINDOW;
   if (boss.hp <= 0) { boss.phase = 'dead'; boss.dying = 0; showCombo(t('bossHit', BOSS_HP), ''); return; }
   showCombo(t('bossHit', BOSS_HP - boss.hp), '');
-  boss.cd = 1.3;
+  boss.cd = 0.7; boss.recoil = 1;
 }
 function bossDefeated() {
   bossDone = true;
@@ -2316,19 +2348,29 @@ function updateBoss(dt) {
   if (hanging) { hanging.getWorldPosition(V3); b.head.worldToLocal(V3); const d = V3.sub(b.pupil.position).normalize(); b.pupil.position.set(d.x * 0.25, 0.15 + d.y * 0.25, 1.82); b.eyeGlow.position.copy(b.pupil.position); }
   if (b.flash > 0) { b.flash = Math.max(0, b.flash - dt * 3); BOSS_MATS.hull.emissive.setRGB(1, 1, 1).multiplyScalar(b.flash * 0.8); b.head.scale.setScalar(1 + b.flash * 0.12); }
   if (b.phase === 'rise') {
-    const k = Math.min(1, b.t / 3.2), e = 1 - Math.pow(1 - k, 3);
+    const k = Math.min(1, b.t / 2.2), e = 1 - Math.pow(1 - k, 3);
     p.y = (level - 26) + (b.base.y - (level - 26)) * e;
     shake = Math.max(shake, 0.05 * (1 - k));
     if (k >= 1) b.phase = 'fight';
   } else if (b.phase === 'fight') {
-    p.y = b.base.y + Math.sin(b.t * 0.9) * 0.4;
-    b.body.rotation.z = Math.sin(b.t * 0.7) * 0.05;
-    if (!fireballs.length) {
+    const hot = b.hp <= 3;
+    const strafe = Math.sin(b.t * (hot ? 1.4 : 0.95)) * (hot ? 6 : 4.5) + Math.sin(b.t * 2.3) * 0.8;
+    b.recoil = Math.max(0, b.recoil - dt * 2.5);
+    const push = b.recoil * 3.5; // knocked back along the view direction
+    const tx = b.base.x + RIGHT.x * strafe + BACK.x * push, tz = b.base.z + RIGHT.y * strafe + BACK.y * push;
+    const vx = (tx - p.x) * Math.min(1, dt * 4), vz = (tz - p.z) * Math.min(1, dt * 4);
+    p.x += vx; p.z += vz;
+    p.y = b.base.y + Math.sin(b.t * 1.6) * 0.6 + b.recoil * 1.2;
+    const lateral = (vx * RIGHT.x + vz * RIGHT.y) / Math.max(dt, 1e-3);
+    b.body.rotation.z += (clamp(-lateral * 0.05, -0.35, 0.35) - b.body.rotation.z) * Math.min(1, dt * 5);
+    b.body.rotation.x = -b.recoil * 0.3;
+    if (fireballs.filter(f => !f.back).length < (hot ? 2 : 1)) {
       b.cd -= dt;
       if (b.cd <= 0) { // the eye glows red before each throw
         b.charge += dt;
-        b.eyeGlow.material.opacity = Math.min(1, b.charge); b.eyeGlow.scale.setScalar(2.2 + b.charge * 3);
-        if (b.charge >= 1.2) { throwFireball(); b.charge = 0; b.cd = 99; b.eyeGlow.material.opacity = 0; }
+        const need = hot ? 0.55 : 0.75;
+        b.eyeGlow.material.opacity = Math.min(1, b.charge / need); b.eyeGlow.scale.setScalar(2.2 + b.charge / need * 3.5);
+        if (b.charge >= need) { throwFireball(); b.charge = 0; b.cd = hot && !b.second ? 0.35 : 99; b.second = hot && !b.second; b.eyeGlow.material.opacity = 0; }
       }
     }
   } else if (b.phase === 'dead') { // explosion sequence
@@ -2355,8 +2397,14 @@ function updateBoss(dt) {
       m.addScaledVector(f.v, dt);
       continue;
     }
+    if (hanging && !f.passed) { // home in on the hanging piece until it has gone past it
+      hanging.getWorldPosition(V3);
+      const toL = V3.sub(m), d = toL.length();
+      if (toL.dot(f.v) <= 0) f.passed = true;
+      else { const sp = f.v.length(); f.v.lerp(toL.multiplyScalar(sp / d), Math.min(1, dt * 2.2)).setLength(sp); }
+    }
     m.addScaledVector(f.v, dt);
-    // meets the load: a swing bats it back; a still load gets hit and burning debris scorches the top floor
+    // meets the load: a swing bats it back; a still load gets part of the piece burned off
     if (hanging && spawnAnim >= 0.6) {
       hanging.getWorldPosition(V3);
       const touching = Math.abs(V3.x - m.x) < cur.w / 2 + 0.4 && Math.abs(V3.z - m.z) < cur.d / 2 + 0.4 && Math.abs(V3.y - m.y) < 1.0;
@@ -2364,16 +2412,27 @@ function updateBoss(dt) {
         if (settings.god || Math.hypot(bobV.x, bobV.y) > 1.4) { f.back = true; returnFireball(); continue; }
         scene.remove(f.m); fireballs.splice(i, 1);
         bobV.x += f.v.x * 0.35; bobV.y += f.v.z * 0.35;
-        cutRoof(f.v.x, f.v.z, 0.25, 0.4);
+        burnLoad(f.v.x, f.v.z);
         puffDust({ x: m.x, z: m.z, w: 0.8, d: 0.8 }, m.y, 10);
         sfx.crash(); shake = Math.max(shake, 0.2); slowMo(0.3);
         showCombo(t('bossMiss'), t('bossMissSub'));
-        b.cd = 1.4;
+        b.cd = 0.9;
         continue;
       }
     }
-    if (f.life > 8 || m.y < level - 6) { scene.remove(f.m); fireballs.splice(i, 1); b.cd = 1; } // dodged: it flies past
+    if (f.life > 8 || m.y < level - 6) { scene.remove(f.m); fireballs.splice(i, 1); b.cd = 0.6; } // dodged: it flies past
   }
+}
+function burnLoad(vx, vz) { // a strip of the hanging piece burns off: the next floor comes out smaller
+  if (!hanging) return;
+  hanging.getWorldPosition(V3);
+  const alongX = Math.abs(vx) >= Math.abs(vz), size = alongX ? cur.w : cur.d, c = clamp(rand(0.3, 0.45), 0, size - 0.6);
+  if (c > 0.05) {
+    const y = V3.y;
+    if (alongX) { const x0 = vx > 0 ? V3.x - cur.w / 2 : V3.x + cur.w / 2 - c; shatter(x0, x0 + c, V3.z - cur.d / 2, V3.z + cur.d / 2, y, level + 1, V3.x, V3.z); cur.w -= c; }
+    else { const z0 = vz > 0 ? V3.z - cur.d / 2 : V3.z + cur.d / 2 - c; shatter(V3.x - cur.w / 2, V3.x + cur.w / 2, z0, z0 + c, y, level + 1, V3.x, V3.z); cur.d -= c; }
+  }
+  hookGroup.remove(hanging); hanging.geometry.dispose(); spawnHanging(); spawnAnim = 0.7;
 }
 function returnFireball() { sfx.pop(); noise(0.15, 0.4, 260); slowMo(0.3); shake = Math.max(shake, 0.1); }
 function clearJuice() {
@@ -2397,7 +2456,7 @@ function updateJuice(dt) {
   // overtime
   if (feverT > 0 && playing) {
     feverT -= dt; feverBeat -= dt;
-    if (feverBeat <= 0) { feverBeat = 0.42; sfx.kick(); }
+    if (feverBeat <= 0) { feverBeat = 0.42; if (!boss) sfx.kick(); }
     const glow = 0.16 + 0.1 * Math.sin(time * 15);
     STYLE_SEQ.forEach(k => { FACADES[k].emissive.setRGB(1, 0.32, 0.05).multiplyScalar(glow); });
     if (feverT <= 0) { endFever(); showAlert(t('feverEnd')); }
@@ -2621,7 +2680,7 @@ function updateCoinsUi() {
   $('coinNum').textContent = profile.coins; $('titleCoins').textContent = profile.coins; $('shopCoins').textContent = profile.coins;
 }
 function gameOver() {
-  state = 'over'; combo = 0; endFever(); $('bossBar').hidden = true; $('streak').hidden = true; $('chips').innerHTML = '';
+  state = 'over'; combo = 0; endFever(); musicStop(); $('bossBar').hidden = true; document.body.classList.remove('boss-on'); $('streak').hidden = true; $('chips').innerHTML = '';
   overT = 0; viewing = false; orbitYaw = 0; viewZoom = 1; viewY = level * 0.5 + 1.5;
   sfx.over();
   knockWorker();
