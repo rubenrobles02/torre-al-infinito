@@ -28,7 +28,7 @@ Step onto the lift platform, point where each floor goes and drop the block at j
 Chain perfect drops before the streak meter runs out. Hit 6 in a row and the tower glows red-hot: coins ×3 and easier perfects.
 
 🐦 INTRUDERS ON SITE
-Pigeons, drones, space junk and meteorites fly across the roof. If they hit it, they break off a piece of your floor. Drop a block on them to knock them out and earn bonus coins.
+Pigeons, drones, space junk and meteorites cross paths with your load. Swing the crane and whack them with the block to send them flying and earn bonus coins. Catch them standing still and they'll knock your load off course.
 
 🧰 TOOLS
 Swing your block through the floating crates: laser level, counterweight, double pay and rebar.

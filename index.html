@@ -634,8 +634,8 @@ const STR = {
     viewHelp: 'Arrastra para girar y subir o bajar · rueda o pellizca para acercar', viewBack: 'VER RESULTADOS',
     perfect: '¡PERFECTO!', grows: 'La planta crece', godOn: 'Todo cae perfecto',
     streak: 'RACHA', fever: '¡A DESTAJO!', feverSub: 'Monedas ×3 · perfectos más fáciles', feverEnd: 'Fin del destajo', streakLost: 'Racha perdida',
-    nearMiss: '¡POR UN PELO!', shotDown: '¡DERRIBADO!', crack: '¡CRAC!', crackSub: 'Te ha roto un trozo de la planta',
-    incoming: n => `¡Cuidado! ${n} a la vista`, inspected: 'SUPERVISADO', floorN: n => `PLANTA ${n}`,
+    nearMiss: '¡POR UN PELO!', shotDown: '¡DERRIBADO!',
+    incoming: n => `¡Cuidado! ${n} a la vista · golpéalo con la carga`, smash: '¡GOLPE!', bumped: '¡Te ha empujado la carga!', inspected: 'SUPERVISADO', floorN: n => `PLANTA ${n}`,
     b_laser: 'Nivel láser', b_laserD: 'Perfectos más fáciles', b_weight: 'Contrapeso', b_weightD: 'Sin balanceo ni viento',
     b_pay: 'Paga doble', b_payD: 'Monedas ×2', b_rebar: 'Refuerzo', b_rebarD: 'La planta recupera su tamaño',
     i_pigeon: 'Paloma', i_drone: 'Dron', i_junk: 'Chatarra espacial', i_meteor: 'Meteorito', i_glitch: 'Glitch',
@@ -679,8 +679,8 @@ const STR = {
     viewHelp: 'Drag to orbit and move up or down · scroll or pinch to zoom', viewBack: 'SEE RESULTS',
     perfect: 'PERFECT!', grows: 'The floor grows', godOn: 'Everything lands perfectly',
     streak: 'STREAK', fever: 'OVERTIME!', feverSub: 'Coins ×3 · easier perfects', feverEnd: 'Overtime over', streakLost: 'Streak lost',
-    nearMiss: 'BY A HAIR!', shotDown: 'SHOT DOWN!', crack: 'CRACK!', crackSub: 'It broke a piece of your floor',
-    incoming: n => `Watch out! ${n} incoming`, inspected: 'INSPECTED', floorN: n => `FLOOR ${n}`,
+    nearMiss: 'BY A HAIR!', shotDown: 'SHOT DOWN!',
+    incoming: n => `Watch out! ${n} incoming · whack it with your load`, smash: 'WHACK!', bumped: 'It shoved your load!', inspected: 'INSPECTED', floorN: n => `FLOOR ${n}`,
     b_laser: 'Laser level', b_laserD: 'Easier perfects', b_weight: 'Counterweight', b_weightD: 'No swing, no wind',
     b_pay: 'Double pay', b_payD: 'Coins ×2', b_rebar: 'Rebar', b_rebarD: 'The floor grows back',
     i_pigeon: 'Pigeon', i_drone: 'Drone', i_junk: 'Space junk', i_meteor: 'Meteorite', i_glitch: 'Glitch',
@@ -1995,53 +1995,29 @@ function spawnIntruder() {
   // cross the screen roughly left-right, aimed at a spot on the roof
   const a = rand(-0.45, 0.45), sgn = Math.random() < 0.5 ? -1 : 1;
   const dir = new THREE.Vector2(RIGHT.x * Math.cos(a) - RIGHT.y * Math.sin(a), RIGHT.x * Math.sin(a) + RIGHT.y * Math.cos(a)).multiplyScalar(sgn);
-  const aim = new THREE.Vector2(top.x + rand(-0.35, 0.35) * top.w, top.z + rand(-0.35, 0.35) * top.d);
-  const speed = kind === 'meteor' ? 5 : kind === 'pigeon' ? 3.6 : 4.2;
-  g.position.set(aim.x - dir.x * 13, level + 0.45, aim.y - dir.y * 13);
+  const aim = new THREE.Vector2(clamp(bob.x + rand(-1, 1), -LIM, LIM), clamp(bob.y + rand(-1, 1), -LIM, LIM));
+  const speed = kind === 'meteor' ? 4.4 : kind === 'pigeon' ? 3.2 : 3.6;
+  g.position.set(aim.x - dir.x * 13, craneY + 2, aim.y - dir.y * 13);
   g.rotation.y = Math.atan2(-dir.y, dir.x);
   scene.add(g);
-  intruders.push({ g, parts, kind, v: new THREE.Vector3(dir.x * speed, 0, dir.y * speed), hit: false, dead: false, life: 0, spin: new THREE.Vector3() });
+  intruders.push({ g, parts, kind, v: new THREE.Vector3(dir.x * speed, 0, dir.y * speed), hit: false, dead: false, life: 0, cool: 0, spin: new THREE.Vector3() });
   showAlert(t('incoming', t('i_' + kind))); sfx.warn();
 }
-function killIntruder(it, byPlayer) {
+function killIntruder(it, byPlayer, whack = 0) {
   it.dead = true; it.life = 0;
-  it.v.set(it.v.x * 0.3 + rand(-1, 1), byPlayer ? 3.5 : 2, it.v.z * 0.3 + rand(-1, 1));
-  it.spin.set(rand(-9, 9), rand(-9, 9), rand(-9, 9));
+  if (whack) { // batted away by the swinging load: flies off along the swing
+    const sp = Math.hypot(bobV.x, bobV.y) || 1;
+    it.v.set(bobV.x / sp * (7 + whack * 2), 4 + whack, bobV.y / sp * (7 + whack * 2));
+  } else it.v.set(it.v.x * 0.3 + rand(-1, 1), byPlayer ? 3.5 : 2, it.v.z * 0.3 + rand(-1, 1));
+  it.spin.set(rand(-12, 12), rand(-12, 12), rand(-12, 12));
   puffDust({ x: it.g.position.x, z: it.g.position.z, w: 0.5, d: 0.5 }, it.g.position.y, 6);
   if (byPlayer) {
-    sfx.pop(); slowMo(0.45); shake = Math.max(shake, 0.1);
-    const bonus = godUsed ? 0 : rollCoin(level).value * 5 * coinBoost();
+    sfx.pop(); slowMo(whack ? 0.55 : 0.45); shake = Math.max(shake, whack ? 0.16 : 0.1);
+    if (whack) { noise(0.12, 0.4, 250); tone(110, 0.2, 'sine', 0.35, -50); if (combo > 0) comboT = COMBO_WINDOW; }
+    const bonus = godUsed ? 0 : rollCoin(level).value * (whack ? Math.round(2 + whack * 1.5) : 5) * coinBoost();
     if (bonus) { profile.coins += bonus; runCoins += bonus; saveProfile(); updateCoinsUi(); flyCoins(6); }
-    showCombo(t('shotDown'), bonus ? `+${bonus}` : t('i_' + it.kind));
+    showCombo(t(whack ? 'smash' : 'shotDown'), bonus ? `+${bonus}` : t('i_' + it.kind));
   }
-}
-function breakRoof(it) { // the intruder smashes the side of the top floor it flies into
-  it.hit = true;
-  sfx.crash(); shake = Math.max(shake, 0.2); slowMo(0.35);
-  showCombo(t('crack'), t('crackSub'));
-  if (top.mesh && level > 0) {
-    const vx = it.v.x, vz = it.v.z, y = level - H / 2;
-    if (Math.abs(vx) >= Math.abs(vz)) {
-      const c = clamp(rand(0.35, 0.6), 0, top.w - 0.6);
-      if (c > 0.05) {
-        const x0 = vx > 0 ? top.x - top.w / 2 : top.x + top.w / 2 - c;
-        shatter(x0, x0 + c, top.z - top.d / 2, top.z + top.d / 2, y, level, top.x, top.z);
-        top.w -= c; top.x += vx > 0 ? c / 2 : -c / 2;
-      }
-    } else {
-      const c = clamp(rand(0.35, 0.6), 0, top.d - 0.6);
-      if (c > 0.05) {
-        const z0 = vz > 0 ? top.z - top.d / 2 : top.z + top.d / 2 - c;
-        shatter(top.x - top.w / 2, top.x + top.w / 2, z0, z0 + c, y, level, top.x, top.z);
-        top.d -= c; top.z += vz > 0 ? c / 2 : -c / 2;
-      }
-    }
-    top.mesh.geometry.dispose(); top.mesh.geometry = boxGeo(top.w, H, top.d);
-    top.mesh.position.set(top.x, y, top.z);
-    cur = { w: Math.min(cur.w, top.w), d: Math.min(cur.d, top.d) };
-    setLiftHealth(towerHealth());
-  }
-  killIntruder(it, false);
 }
 // The falling block sweeps a long way in one frame, so test the whole stretch it covered (y0 -> now)
 function hitIntruders(f, y0) {
@@ -2106,13 +2082,24 @@ function updateJuice(dt) {
       continue;
     }
     p.x += it.v.x * dt; p.z += it.v.z * dt;
-    p.y += (level + 0.45 - p.y) * Math.min(1, dt * 4);
+    p.y += (craneY + 2 + Math.sin(it.life * 3) * 0.12 - p.y) * Math.min(1, dt * 4);
+    it.cool = Math.max(0, it.cool - dt);
     if (it.parts.wings) it.parts.wings.forEach(({ pv, sg }) => { pv.rotation.x = Math.sin(time * 16) * 0.7 * sg; });
     if (it.parts.rotors) it.parts.rotors.forEach(r => { r.rotation.y += dt * 40; });
     if (it.parts.core) { it.parts.core.visible = Math.random() > 0.15; it.g.position.y += rand(-0.03, 0.03); }
     if (it.kind === 'junk' || it.kind === 'meteor') { it.g.rotation.x += dt * 1.5; it.g.rotation.z += dt * 1.1; }
-    // hits the roof
-    if (!it.hit && playing && Math.abs(p.x - top.x) < top.w / 2 + 0.2 && Math.abs(p.z - top.z) < top.d / 2 + 0.2) { breakRoof(it); continue; }
+    // meets the hanging load: a fast swing bats it away, otherwise it shoves the load off its line
+    if (hanging && playing && spawnAnim >= 0.6 && it.cool <= 0) {
+      hanging.getWorldPosition(V3);
+      if (Math.abs(V3.x - p.x) < cur.w / 2 + 0.35 && Math.abs(V3.z - p.z) < cur.d / 2 + 0.35 && Math.abs(V3.y - p.y) < 0.85) {
+        const swing = Math.hypot(bobV.x, bobV.y);
+        if (swing > 1.6) { killIntruder(it, true, swing); continue; }
+        const iv = Math.hypot(it.v.x, it.v.z) || 1;
+        bobV.x += it.v.x / iv * 3.2; bobV.y += it.v.z / iv * 3.2;
+        it.v.x *= -0.8; it.v.z *= -0.8; it.cool = 0.8;
+        shake = Math.max(shake, 0.06); noise(0.12, 0.3, 500); showAlert(t('bumped'));
+      }
+    }
     if (Math.hypot(p.x - top.x, p.z - top.z) > 16) { scene.remove(it.g); intruders.splice(i, 1); }
   }
   // dust
