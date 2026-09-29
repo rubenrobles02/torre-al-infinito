@@ -212,15 +212,20 @@
     100% { opacity: 0; transform: translate(-50%, -8px); }
   }
   /* crane joystick + drop button (touch screens) */
-  #pad { position: fixed; inset: auto 0 0 0; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-end;
-    padding: 0 max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 22px) max(18px, env(safe-area-inset-left, 0px)); }
-  #padStick { pointer-events: auto; touch-action: none; position: relative; width: 136px; height: 136px; border-radius: 50%;
-    background: rgba(12,13,16,.42); border: 3px solid rgba(255,255,255,.35); box-shadow: 0 4px 18px rgba(0,0,0,.25); }
+  #pad { position: fixed; inset: 0; pointer-events: none; }
+  /* touch anywhere in this zone: that point becomes the centre of the joystick */
+  #padZone { position: absolute; left: 0; bottom: 0; width: 58%; height: 62%; pointer-events: auto; touch-action: none; }
+  #padStick { position: absolute; pointer-events: none; width: 136px; height: 136px; border-radius: 50%;
+    left: max(18px, env(safe-area-inset-left, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+    background: rgba(12,13,16,.42); border: 3px solid rgba(255,255,255,.35); box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    opacity: .55; transition: opacity .2s ease; }
+  #padStick.active { opacity: 1; transition: none; }
   #padStick::before, #padStick::after { content: ''; position: absolute; left: 50%; top: 50%; background: rgba(255,255,255,.22); transform: translate(-50%, -50%); }
   #padStick::before { width: 70%; height: 3px; } #padStick::after { width: 3px; height: 70%; }
   #padKnob { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
     background: var(--hazard); box-shadow: 0 4px 0 var(--hazard-dark), 0 6px 14px rgba(0,0,0,.35); }
-  #dropBtn { pointer-events: auto; touch-action: none; width: 112px; height: 112px; border-radius: 50%; border: 0; cursor: pointer;
+  #dropBtn { position: absolute; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+    pointer-events: auto; touch-action: none; width: 112px; height: 112px; border-radius: 50%; border: 0; cursor: pointer;
     background: var(--signal); color: #17181c; font-family: var(--display); font-size: 19px; line-height: 1;
     box-shadow: 0 6px 0 #a8430d, 0 8px 18px rgba(0,0,0,.35); display: grid; place-items: center; }
   #dropBtn:active, #dropBtn.down { transform: translateY(5px); box-shadow: 0 1px 0 #a8430d, 0 3px 8px rgba(0,0,0,.3); }
@@ -320,7 +325,7 @@
 <button id="skipBtn" type="button" hidden data-i18n="skip">SALTAR INTRO ▸▸</button>
 <div id="joy" hidden><div id="joyKnob"></div></div>
 <div id="pad" hidden>
-  <div id="padStick" role="application" aria-label="Joystick de la grúa" data-i18n-aria="padAria"><div id="padKnob"></div></div>
+  <div id="padZone" role="application" aria-label="Joystick de la grúa" data-i18n-aria="padAria"><div id="padStick"><div id="padKnob"></div></div></div>
   <button id="dropBtn" type="button"><span><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3v13M6 11l6 6 6-6M5 21h14" stroke="currentColor" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="dropBtn">SOLTAR</span></span></button>
 </div>
 
@@ -580,7 +585,7 @@ const STR = {
     windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
     equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
     hintWalkTouch: 'Arrastra el dedo para caminar', hintWalkMouse: 'Camina con WASD o las flechas, o haz clic en el suelo',
-    hintCraneTouch: 'Arrastra el dedo para dirigir la grúa · levántalo para soltar', hintJoy: 'Mueve la grúa con el joystick · pulsa SOLTAR',
+    hintCraneTouch: 'Arrastra el dedo para dirigir la grúa · levántalo para soltar', hintJoy: 'Desliza el pulgar en la parte izquierda para mover la grúa · pulsa SOLTAR',
     dropBtn: 'SOLTAR', padAria: 'Joystick de la grúa', touchCtl: 'Controles en pantalla táctil', ctlJoy: 'JOYSTICK', ctlFinger: 'CON EL DEDO',
     ctlNote: 'Joystick para mover la grúa y botón para soltar, o arrastrar el dedo por la pantalla y levantarlo para soltar.', hintCraneMouse: 'Mueve el ratón para dirigir la grúa · clic para soltar',
     coin_bronce: 'bronce', coin_plata: 'plata', coin_oro: 'oro', coin_diamante: 'diamante',
@@ -619,7 +624,7 @@ const STR = {
     windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
     equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
     hintWalkTouch: 'Drag your finger to walk', hintWalkMouse: 'Walk with WASD or the arrow keys, or click the ground',
-    hintCraneTouch: 'Drag your finger to steer the crane · lift it to drop', hintJoy: 'Move the crane with the joystick · tap DROP',
+    hintCraneTouch: 'Drag your finger to steer the crane · lift it to drop', hintJoy: 'Slide your thumb on the left side to move the crane · tap DROP',
     dropBtn: 'DROP', padAria: 'Crane joystick', touchCtl: 'Touch screen controls', ctlJoy: 'JOYSTICK', ctlFinger: 'FINGER',
     ctlNote: 'A joystick to move the crane and a button to drop, or drag your finger across the screen and lift it to drop.', hintCraneMouse: 'Move the mouse to steer the crane · click to drop',
     coin_bronce: 'bronze', coin_plata: 'silver', coin_oro: 'gold', coin_diamante: 'diamond',
@@ -2216,20 +2221,33 @@ function viewUp(e) { vPtr.delete(e.pointerId); pinchD = 0; }
 canvas.addEventListener('wheel', e => { if (state === 'over' && viewing) { e.preventDefault(); viewZoom = clamp(viewZoom * (1 + e.deltaY * 0.0012), 0.25, 1.6); } }, { passive: false });
 // Crane joystick (touch): the stick sets a direction and the crane target glides that way
 const usePad = () => COARSE && settings.touchCtl === 'joystick';
-const pad = { id: null, x: 0, y: 0 };
-const padStick = $('padStick'), padKnob = $('padKnob');
+// Floating stick: wherever the thumb lands becomes the centre, so touching never moves the crane by itself
+const pad = { id: null, x: 0, y: 0, ox: 0, oy: 0 };
+const padZone = $('padZone'), padStick = $('padStick'), padKnob = $('padKnob');
+const PAD_R = 52;
 function padSet(e) {
-  const r = padStick.getBoundingClientRect(), R = r.width / 2 - 12;
-  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-  const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; }
-  pad.x = dx / R; pad.y = dy / R;
+  let dx = e.clientX - pad.ox, dy = e.clientY - pad.oy;
+  const l = Math.hypot(dx, dy); if (l > PAD_R) { dx *= PAD_R / l; dy *= PAD_R / l; }
+  pad.x = dx / PAD_R; pad.y = dy / PAD_R;
   padKnob.style.transform = `translate(${dx}px, ${dy}px)`;
 }
-function padEnd(e) { if (e.pointerId !== pad.id) return; pad.id = null; pad.x = pad.y = 0; padKnob.style.transform = 'translate(0,0)'; }
-padStick.addEventListener('pointerdown', e => { e.preventDefault(); pad.id = e.pointerId; try { padStick.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } padSet(e); aimed = true; });
-padStick.addEventListener('pointermove', e => { if (e.pointerId === pad.id) padSet(e); });
-padStick.addEventListener('pointerup', padEnd);
-padStick.addEventListener('pointercancel', padEnd);
+function padReset() {
+  pad.id = null; pad.x = pad.y = 0; padKnob.style.transform = 'translate(0,0)';
+  padStick.classList.remove('active'); padStick.style.left = padStick.style.top = padStick.style.bottom = '';
+}
+function padEnd(e) { if (e.pointerId === pad.id) padReset(); }
+padZone.addEventListener('pointerdown', e => {
+  if (pad.id !== null) return;
+  e.preventDefault(); pad.id = e.pointerId; try { padZone.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  const r = padZone.getBoundingClientRect(), half = padStick.offsetWidth / 2;
+  pad.ox = e.clientX; pad.oy = e.clientY; pad.x = pad.y = 0;
+  padStick.style.left = (e.clientX - r.left - half) + 'px'; padStick.style.top = (e.clientY - r.top - half) + 'px'; padStick.style.bottom = 'auto';
+  padStick.classList.add('active'); padKnob.style.transform = 'translate(0,0)';
+  aimed = true;
+});
+padZone.addEventListener('pointermove', e => { if (e.pointerId === pad.id) padSet(e); });
+padZone.addEventListener('pointerup', padEnd);
+padZone.addEventListener('pointercancel', padEnd);
 const dropBtn = $('dropBtn');
 dropBtn.addEventListener('pointerdown', e => { e.preventDefault(); dropBtn.classList.add('down'); drop(); });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => dropBtn.addEventListener(ev, () => dropBtn.classList.remove('down')));
@@ -2451,7 +2469,7 @@ function update(dt) {
 
   // ---- touch joystick
   const padOn = state === 'playing' && usePad();
-  if ($('pad').hidden === padOn) { $('pad').hidden = !padOn; document.body.classList.toggle('pad-on', padOn); if (!padOn) { pad.id = null; pad.x = pad.y = 0; padKnob.style.transform = 'translate(0,0)'; } }
+  if ($('pad').hidden === padOn) { $('pad').hidden = !padOn; document.body.classList.toggle('pad-on', padOn); if (!padOn) padReset(); }
   if (padOn && (pad.x || pad.y)) {
     const sp = 4.2 * dt; // world units per second at full tilt; screen up moves the crane away from the camera
     target.x = clamp(target.x + (RIGHT.x * pad.x - BACK.x * pad.y) * sp, -LIM, LIM);
