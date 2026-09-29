@@ -329,6 +329,41 @@
   }
   #fade { position: fixed; inset: 0; background: #0b0c0f; pointer-events: none; opacity: 1; transition: opacity .8s ease; }
   #fade.out { opacity: 0; }
+  /* ---------- boss health bar ---------- */
+  #bossBar {
+    position: fixed; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top, 0px) + 158px);
+    width: min(340px, calc(100% - 32px)); background: rgba(18,19,23,.9); border-top: 4px solid #ff3b30; padding: 8px 12px 10px;
+    display: grid; gap: 6px; pointer-events: none;
+  }
+  #bossName { font-family: var(--display); font-size: 16px; color: #ff6a4a; text-align: center; letter-spacing: .02em; }
+  #bossPips { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  #bossPips i { height: 12px; background: #ff3b30; box-shadow: 0 0 8px rgba(255,59,48,.6); transition: background .2s ease, box-shadow .2s ease; }
+  #bossPips i.off { background: #33363f; box-shadow: none; }
+  #bossBar.hit { animation: bosshit .35s ease; }
+  @keyframes bosshit { 0%, 100% { transform: translateX(-50%); } 25% { transform: translateX(calc(-50% - 8px)); } 75% { transform: translateX(calc(-50% + 8px)); } }
+  /* ---------- phones: compact HUD, pop-ups away from the tower top ---------- */
+  @media (max-width: 520px) {
+    #hud { padding: calc(env(safe-area-inset-top, 0px) + 10px) 10px 0; gap: 8px; }
+    .hud-left { gap: 6px; }
+    .plate { padding: 6px 10px 7px 9px; gap: 1px; border-left-width: 3px; }
+    .floors { font-size: 30px; gap: 6px; } .floors small { font-size: 11px; }
+    .alt { font-size: 12px; } .zone { font-size: 11px; } .wind { font-size: 10px; } .wind svg { width: 13px; height: 13px; }
+    #streak { width: 136px; padding: 5px 9px 7px 8px; gap: 4px; } #streakNum { font-size: 18px; } #streakLbl { font-size: 10px; }
+    .chip { font-size: 13px; padding: 4px 8px 4px 7px; }
+    .hud-right { gap: 6px; }
+    .best { font-size: 10px; padding: 5px 8px; } .best b { font-size: 15px; }
+    .ibtn { width: 38px; height: 38px; }
+    #god { font-size: 9px; padding: 6px 8px; gap: 5px; } #god i { width: 8px; height: 8px; }
+    #combo { top: 62%; font-size: 30px; } #combo small { font-size: 15px; }
+    #banner { top: 26%; } #banner .name { font-size: 24px; } #banner .sub { font-size: 15px; }
+    #stamp { top: 60%; }
+    #alert { bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); font-size: 15px; }
+    #hint { font-size: 14px; padding: 7px 12px; }
+    body.pad-on #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 138px); }
+    #padStick { width: 118px; height: 118px; } #padKnob { width: 50px; height: 50px; margin: -25px 0 0 -25px; }
+    #dropBtn { width: 96px; height: 96px; font-size: 16px; }
+    #pad { --gap: 14px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     #combo.show, #banner.show { animation-duration: .01s; opacity: 1; }
     .mbtn, #fade { transition: none; }
@@ -362,6 +397,7 @@
 <div id="feverFx"></div>
 <div id="combo"></div>
 <div id="alert"></div>
+<div id="bossBar" hidden><div id="bossName"></div><div id="bossPips"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
 <div id="stamp"><b id="stampNum"></b><span id="stampTxt"></span></div>
 <div id="banner"><div class="tag"><span data-i18n="newZone">NUEVA ZONA</span></div><div class="name" id="bannerName"></div><div class="sub" id="bannerSub"></div></div>
 <div id="hint" hidden></div>
@@ -639,6 +675,10 @@ const STR = {
     b_laser: 'Nivel láser', b_laserD: 'Perfectos más fáciles', b_weight: 'Contrapeso', b_weightD: 'Sin balanceo ni viento',
     b_pay: 'Paga doble', b_payD: 'Monedas ×2', b_rebar: 'Refuerzo', b_rebarD: 'La planta recupera su tamaño',
     i_pigeon: 'Paloma', i_drone: 'Dron', i_junk: 'Chatarra espacial', i_meteor: 'Meteorito', i_glitch: 'Glitch',
+    ufoIncoming: '¡Un inspector alienígena! Devuélvele sus órdenes de demolición con la carga', returned: '¡DEVUELTA!', returnedSub: 'Al remitente',
+    bossName: 'EL SUPERVISOR SUPREMO', bossWarn: '¡Se acerca algo por detrás de la Tierra!', bossIntro: 'Golpea sus bolas de fuego balanceando la carga: devuélvele 6 para seguir construyendo',
+    bossHit: n => `¡TOMA! ${n}/6`, bossMiss: '¡AY!', bossMissSub: 'Golpéala con más impulso: mueve la grúa cuando llegue', bossWin: '¡JEFE DERROTADO!', bossWinSub: n => `+${n} monedas`,
+    appeal: '¡RECURSO ACEPTADO!', demolished: '¡ORDEN DE DEMOLICIÓN!', demolishedSub: 'Te han demolido un trozo de la planta', ufoGone: 'El inspector se marcha',
     windNone: 'Sin viento', wind: 'Viento', windSolar: 'Viento solar',
     equipped: 'EQUIPADO', equip: 'EQUIPAR', buy: 'Comprar', short: n => `Te faltan ${n} monedas`, tryOn: n => `Probar ${n}`,
     hintWalkTouch: 'Arrastra el dedo para caminar', hintWalkMouse: 'Camina con WASD o las flechas, o haz clic en el suelo',
@@ -684,6 +724,10 @@ const STR = {
     b_laser: 'Laser level', b_laserD: 'Easier perfects', b_weight: 'Counterweight', b_weightD: 'No swing, no wind',
     b_pay: 'Double pay', b_payD: 'Coins ×2', b_rebar: 'Rebar', b_rebarD: 'The floor grows back',
     i_pigeon: 'Pigeon', i_drone: 'Drone', i_junk: 'Space junk', i_meteor: 'Meteorite', i_glitch: 'Glitch',
+    ufoIncoming: 'An alien inspector! Bat its demolition orders back with your load', returned: 'RETURNED!', returnedSub: 'Back to sender',
+    bossName: 'THE SUPREME SUPERVISOR', bossWarn: 'Something is rising behind the Earth!', bossIntro: 'Swing your load into its fireballs: bat 6 of them back to keep building',
+    bossHit: n => `TAKE THAT! ${n}/6`, bossMiss: 'OUCH!', bossMissSub: 'Hit it harder: move the crane as it arrives', bossWin: 'BOSS DEFEATED!', bossWinSub: n => `+${n} coins`,
+    appeal: 'APPEAL GRANTED!', demolished: 'DEMOLITION ORDER!', demolishedSub: 'A piece of your floor was torn down', ufoGone: 'The inspector flies off',
     windNone: 'No wind', wind: 'Wind', windSolar: 'Solar wind',
     equipped: 'EQUIPPED', equip: 'EQUIP', buy: 'Buy', short: n => `You need ${n} more coins`, tryOn: n => `Try on ${n}`,
     hintWalkTouch: 'Drag your finger to walk', hintWalkMouse: 'Walk with WASD or the arrow keys, or click the ground',
@@ -729,6 +773,9 @@ const canvas = renderer.domElement;
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xcdeaff, 40, 190);
 const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.5, 5000);
+// Portrait phones get a wider lens rather than a camera pulled far back, so the tower stays big
+const baseFov = () => (camera.aspect < 0.8 ? 56 : 48);
+camera.fov = baseFov(); camera.updateProjectionMatrix();
 
 const hemi = new THREE.HemisphereLight(C('#dcebff'), C('#6b5a45'), 0.45);
 scene.add(hemi);
@@ -1808,7 +1855,7 @@ function spawnHanging() {
   a.needsUpdate = true; slings.visible = true;
 }
 function drop() {
-  if (!hanging || falling || state !== 'playing' || spawnAnim < 0.6) return;
+  if (!hanging || falling || state !== 'playing' || spawnAnim < 0.6 || boss) return;
   const wp = new THREE.Vector3(); hanging.getWorldPosition(wp);
   hookGroup.remove(hanging);
   hanging.position.copy(wp); hanging.rotation.copy(hookGroup.rotation); hanging.scale.set(1, 1, 1);
@@ -2028,11 +2075,314 @@ function hitIntruders(f, y0) {
     if (Math.abs(m.x - p.x) < f.w / 2 + 0.4 && Math.abs(m.z - p.z) < f.d / 2 + 0.4 && p.y <= y0 + H / 2 + 0.4 && p.y >= m.y - H / 2 - 0.4) killIntruder(it, true);
   }
 }
+// ---- The alien inspector (from space on): a flying saucer that fires demolition orders at the tower.
+// Touch an order with the hanging load and it goes back to the sender; three of its own orders... one is enough.
+const UFO_MATS = {
+  hull: std('#aab3c0', 0.3, 0.85), rim: new THREE.MeshStandardMaterial({ color: C('#39424f'), emissive: C('#7dff9a'), emissiveIntensity: 0.6, roughness: 0.4, metalness: 0.6 }),
+  dome: new THREE.MeshStandardMaterial({ color: C('#b8ffd0'), transparent: true, opacity: 0.4, roughness: 0.05, metalness: 0.1, depthWrite: false }),
+  skin: std('#6fdc5a', 0.5), eye: std('#101010', 0.2),
+};
+const UFO_LIGHTS = ['#7dff9a', '#ffe14a', '#ff5ad1'].map(c => new THREE.MeshBasicMaterial({ color: C(c) }));
+const orderTex = canvasTex(128, 88, (g) => {
+  g.fillStyle = '#eafccd'; g.fillRect(0, 0, 128, 88);
+  g.fillStyle = '#9cc47a'; for (let y = 16; y < 80; y += 11) g.fillRect(12, y, y > 50 ? 60 : 96, 4);
+  g.strokeStyle = '#e2452b'; g.lineWidth = 6; g.beginPath(); g.arc(94, 58, 20, 0, 7); g.stroke();
+  g.beginPath(); g.moveTo(82, 46); g.lineTo(106, 70); g.moveTo(106, 46); g.lineTo(82, 70); g.stroke();
+});
+const orderMat = new THREE.MeshBasicMaterial({ map: orderTex, side: THREE.DoubleSide });
+const orderGeo = new THREE.PlaneGeometry(0.55, 0.38);
+let ufo = null, nextUfoAt = 26;
+const orders = [];
+function makeUfo() {
+  const g = new THREE.Group();
+  const hull = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 16), UFO_MATS.hull); hull.scale.y = 0.28; g.add(hull);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.78, 0.07, 10, 48), UFO_MATS.rim); rim.rotation.x = Math.PI / 2; g.add(rim);
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(0.38, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), UFO_MATS.dome); dome.position.y = 0.12; g.add(dome);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 12), UFO_MATS.skin); head.position.y = 0.25; head.scale.set(1, 1.15, 1); g.add(head);
+  [-1, 1].forEach(sg => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), UFO_MATS.eye); e.scale.set(0.8, 1.3, 0.5); e.position.set(0.07 * sg, 0.28, 0.14); g.add(e); });
+  const lights = [];
+  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2, l = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), UFO_LIGHTS[i % 3]); l.position.set(Math.cos(a) * 0.62, -0.1, Math.sin(a) * 0.62); g.add(l); lights.push(l); }
+  const beam = glowSprite('#7dff9a', 1.2, 0.0); beam.position.y = -0.25; g.add(beam);
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return { g, head, lights, beam };
+}
+function spawnUfo() {
+  const u = makeUfo(), side = Math.random() < 0.5 ? -1 : 1;
+  const halfW = camDist * Math.tan(Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect)); // visible half-width at the tower
+  const lat = clamp(halfW - 1.4, 3.3, 5.4);
+  const home = new THREE.Vector2(top.x + RIGHT.x * side * lat + BACK.x * rand(0.5, 2), top.z + RIGHT.y * side * lat + BACK.y * rand(0.5, 2));
+  u.g.position.set(home.x + RIGHT.x * side * 10, craneY + 7, home.y + RIGHT.y * side * 10);
+  scene.add(u.g);
+  ufo = { ...u, home, side, t: 0, shots: 3, cd: 2.4, charge: 0, dead: false, leaving: false, v: new THREE.Vector3(), spin: new THREE.Vector3() };
+  showAlert(t('ufoIncoming')); sfx.warn(); tone(420, 1.2, 'sine', 0.05, 380);
+}
+function removeUfo() { if (ufo) { scene.remove(ufo.g); ufo = null; } }
+function fireOrder() {
+  const from = ufo.g.position, to = new THREE.Vector3(top.x + rand(-0.3, 0.3) * top.w, level + 0.5, top.z + rand(-0.3, 0.3) * top.d);
+  const m = new THREE.Mesh(orderGeo, orderMat), glow = glowSprite('#9dff6a', 1.3, 0.8);
+  m.add(glow); m.position.copy(from); scene.add(m);
+  orders.push({ m, v: to.sub(from).normalize().multiplyScalar(3.1), back: false, life: 0 });
+  tone(880, 0.35, 'sawtooth', 0.05, -620); noise(0.15, 0.15, 3000);
+}
+function returnOrder(o) {
+  o.back = true;
+  sfx.pop(); slowMo(0.35); shake = Math.max(shake, 0.08);
+  if (combo > 0) comboT = COMBO_WINDOW;
+  showCombo(t('returned'), t('returnedSub'));
+}
+function cutRoof(vx, vz, depthMin, depthMax) { // tear a strip off the side of the top floor facing the incoming direction
+  if (!top.mesh || level <= 0) return;
+  const y = level - H / 2;
+  if (Math.abs(vx) >= Math.abs(vz)) {
+    const c = clamp(rand(depthMin, depthMax), 0, top.w - 0.6);
+    if (c <= 0.05) return;
+    const x0 = vx > 0 ? top.x - top.w / 2 : top.x + top.w / 2 - c;
+    shatter(x0, x0 + c, top.z - top.d / 2, top.z + top.d / 2, y, level, top.x, top.z);
+    top.w -= c; top.x += vx > 0 ? c / 2 : -c / 2;
+  } else {
+    const c = clamp(rand(depthMin, depthMax), 0, top.d - 0.6);
+    if (c <= 0.05) return;
+    const z0 = vz > 0 ? top.z - top.d / 2 : top.z + top.d / 2 - c;
+    shatter(top.x - top.w / 2, top.x + top.w / 2, z0, z0 + c, y, level, top.x, top.z);
+    top.d -= c; top.z += vz > 0 ? c / 2 : -c / 2;
+  }
+  top.mesh.geometry.dispose(); top.mesh.geometry = boxGeo(top.w, H, top.d);
+  top.mesh.position.set(top.x, y, top.z);
+  cur = { w: Math.min(cur.w, top.w), d: Math.min(cur.d, top.d) };
+  setLiftHealth(towerHealth());
+}
+function ufoDown() {
+  ufo.dead = true; ufo.t = 0;
+  ufo.v.set(rand(-1, 1), 3, rand(-1, 1)); ufo.spin.set(rand(-4, 4), rand(-8, 8), rand(-4, 4));
+  sfx.crash(); sfx.pop(); slowMo(0.6); shake = Math.max(shake, 0.2);
+  puffDust({ x: ufo.g.position.x, z: ufo.g.position.z, w: 1.2, d: 1.2 }, ufo.g.position.y, 12);
+  const bonus = godUsed ? 0 : rollCoin(level).value * 12 * coinBoost();
+  if (bonus) { profile.coins += bonus; runCoins += bonus; saveProfile(); updateCoinsUi(); flyCoins(7); }
+  showCombo(t('appeal'), bonus ? `+${bonus}` : '');
+}
+function updateUfo(dt) {
+  const playing = state === 'playing';
+  if (ufo) {
+    const u = ufo, p = u.g.position;
+    u.t += dt;
+    u.lights.forEach((l, i) => { l.visible = Math.floor(u.t * 8 + i) % 3 !== 0; });
+    if (u.dead) {
+      u.v.y -= 14 * dt; p.addScaledVector(u.v, dt);
+      u.g.rotation.x += u.spin.x * dt; u.g.rotation.y += u.spin.y * dt; u.g.rotation.z += u.spin.z * dt;
+      if (u.t > 3.5) removeUfo();
+    } else if (u.leaving) {
+      p.y += dt * 5; p.x += RIGHT.x * u.side * dt * 6; p.z += RIGHT.y * u.side * dt * 6;
+      if (p.y > craneY + 16) removeUfo();
+    } else {
+      // hover beside the tower at the height of the load, drifting a little
+      const a = Math.sin(u.t * 0.45) * 0.9;
+      const hx = u.home.x + BACK.x * a, hz = u.home.y + BACK.y * a, hy = craneY + 2.7 + Math.sin(u.t * 1.7) * 0.15;
+      const k = Math.min(1, dt * 1.8);
+      p.x += (hx - p.x) * k; p.y += (hy - p.y) * k; p.z += (hz - p.z) * k;
+      u.g.rotation.y += dt * 1.2; u.g.rotation.z = Math.sin(u.t * 1.3) * 0.12;
+      if (playing && u.t > 2.5) {
+        u.cd -= dt;
+        if (u.cd <= 0 && u.shots > 0) { // green glow telegraphs every shot
+          u.charge += dt; u.beam.material.opacity = Math.min(1, u.charge * 1.2); u.beam.scale.setScalar(1.2 + u.charge * 1.4);
+          if (u.charge >= 0.9) { fireOrder(); u.charge = 0; u.shots--; u.cd = 3; u.beam.material.opacity = 0; }
+        } else if (u.shots === 0 && u.cd <= 0) { u.leaving = true; if (!orders.length) showAlert(t('ufoGone')); }
+      }
+    }
+  }
+  for (let i = orders.length - 1; i >= 0; i--) {
+    const o = orders[i], m = o.m.position;
+    o.life += dt;
+    o.m.rotation.x += dt * 5; o.m.rotation.y += dt * 7;
+    if (o.back) { // home in on the saucer
+      if (!ufo || ufo.dead) { scene.remove(o.m); orders.splice(i, 1); continue; }
+      const to = V3.copy(ufo.g.position).sub(m), dist = to.length();
+      if (dist < 0.7) { scene.remove(o.m); orders.splice(i, 1); ufoDown(); continue; }
+      o.v.copy(to.multiplyScalar(8.5 / dist));
+    }
+    m.addScaledVector(o.v, dt);
+    if (!o.back) {
+      // bat it back with the hanging load (or the block you just dropped)
+      let back = false;
+      if (hanging && spawnAnim >= 0.6) {
+        hanging.getWorldPosition(V3);
+        back = Math.abs(V3.x - m.x) < cur.w / 2 + 0.3 && Math.abs(V3.z - m.z) < cur.d / 2 + 0.3 && Math.abs(V3.y - m.y) < 0.8;
+      }
+      if (!back && falling) {
+        const f = falling.m.position;
+        back = Math.abs(f.x - m.x) < falling.w / 2 + 0.3 && Math.abs(f.z - m.z) < falling.d / 2 + 0.3 && Math.abs(f.y - m.y) < 0.8;
+      }
+      if (back) { returnOrder(o); continue; }
+      // reaches the tower: tears a piece off the top floor
+      if (Math.abs(m.x - top.x) < top.w / 2 + 0.05 && Math.abs(m.z - top.z) < top.d / 2 + 0.05 && m.y <= level + 0.9) {
+        scene.remove(o.m); orders.splice(i, 1);
+        if (playing) {
+          cutRoof(o.v.x, o.v.z, 0.3, 0.45);
+          sfx.crash(); shake = Math.max(shake, 0.18); slowMo(0.3);
+          showCombo(t('demolished'), t('demolishedSub'));
+        }
+        continue;
+      }
+    }
+    if (o.life > 7) { scene.remove(o.m); orders.splice(i, 1); }
+  }
+}
+// ---- Boss at floor 50: the Supreme Supervisor rises from behind the Earth and throws fireballs.
+// Building stops until the player bats 6 of them back with the hanging load.
+const BOSS_LV = 50, BOSS_HP = 6;
+const BOSS_MATS = {
+  hull: std('#4b5260', 0.35, 0.85),
+  rim: new THREE.MeshStandardMaterial({ color: C('#2a2e36'), emissive: C('#ff3b6a'), emissiveIntensity: 0.9, roughness: 0.4, metalness: 0.6 }),
+  dome: new THREE.MeshStandardMaterial({ color: C('#b8ffd0'), transparent: true, opacity: 0.28, roughness: 0.05, metalness: 0.1, depthWrite: false }),
+  skin: std('#5fcf4e', 0.55), white: std('#f4f6f0', 0.3), pupil: std('#111111', 0.2), hat: std('#ffc21a', 0.35),
+  fire: new THREE.MeshBasicMaterial({ color: C('#ffd27a') }),
+};
+const fireGeo = new THREE.SphereGeometry(0.34, 16, 12);
+let boss = null, bossDone = false;
+const fireballs = [];
+function makeBoss() {
+  const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+  const hull = new THREE.Mesh(new THREE.SphereGeometry(6, 48, 24), BOSS_MATS.hull); hull.scale.y = 0.26; body.add(hull);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(5.9, 0.34, 12, 72), BOSS_MATS.rim); rim.rotation.x = Math.PI / 2; body.add(rim);
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(2.7, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), BOSS_MATS.dome); dome.position.y = 1.1; body.add(dome);
+  const head = new THREE.Group(); head.position.y = 2.2; body.add(head);
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(1.6, 32, 20), BOSS_MATS.skin); skull.scale.set(1, 1.12, 0.95); head.add(skull);
+  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.72, 24, 16), BOSS_MATS.white); eye.position.set(0, 0.15, 1.2); head.add(eye);
+  const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.33, 16, 12), BOSS_MATS.pupil); pupil.position.set(0, 0.15, 1.82); head.add(pupil);
+  const eyeGlow = glowSprite('#ff3b1a', 2.2, 0); eyeGlow.position.copy(pupil.position); head.add(eyeGlow);
+  const hat = new THREE.Mesh(new THREE.SphereGeometry(1.68, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2), BOSS_MATS.hat); hat.position.y = 0.55; head.add(hat);
+  const brim = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 0.12, 32), BOSS_MATS.hat); brim.scale.z = 1.1; brim.position.set(0, 0.56, 0.2); head.add(brim);
+  [-1, 1].forEach(sg => {
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.4, 6), BOSS_MATS.skin); ant.position.set(0.7 * sg, 2.1, 0); ant.rotation.z = -0.35 * sg; head.add(ant);
+    const tip = glowSprite('#9dff6a', 0.9, 0.9); tip.position.set(0.95 * sg, 2.75, 0); head.add(tip);
+  });
+  const lights = [];
+  for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2, l = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), UFO_LIGHTS[i % 3]); l.position.set(Math.cos(a) * 5.2, -0.5, Math.sin(a) * 5.2); body.add(l); lights.push(l); }
+  const under = glowSprite('#ff3b6a', 9, 0.5); under.position.y = -1.3; body.add(under);
+  return { g, body, head, pupil, eyeGlow, lights };
+}
+function setBossPips() { document.querySelectorAll('#bossPips i').forEach((el, i) => el.classList.toggle('off', i >= boss.hp)); }
+function startBoss() {
+  intruders.forEach(it => scene.remove(it.g)); intruders.length = 0;
+  removeUfo(); orders.forEach(o => scene.remove(o.m)); orders.length = 0; removeBoostItem();
+  const b = makeBoss(); scene.add(b.g);
+  boss = { ...b, hp: BOSS_HP, t: 0, phase: 'rise', cd: 1.2, charge: 0, flash: 0, dying: 0, base: behind(26, 0, level + 8) };
+  b.g.position.set(boss.base.x, level - 26, boss.base.z);
+  $('bossName').textContent = t('bossName'); setBossPips(); $('bossBar').hidden = false;
+  showAlert(t('bossWarn')); sfx.warn();
+  tone(48, 3.2, 'sawtooth', 0.12, 30); noise(3, 0.12, 120, 0, 'lowpass');
+  setTimeout(() => { if (boss && boss.phase !== 'dead') showBanner({ name: { es: t('bossName'), en: t('bossName') }, sub: { es: t('bossIntro'), en: t('bossIntro') } }); }, 2600);
+}
+function removeBoss() {
+  if (boss) scene.remove(boss.g);
+  boss = null; fireballs.forEach(f => scene.remove(f.m)); fireballs.length = 0;
+  $('bossBar').hidden = true;
+}
+function throwFireball() {
+  const from = V3.set(0, 0.15, 1.9); boss.head.localToWorld(from);
+  const to = new THREE.Vector3(bob.x, craneY + 2, bob.y); // straight at the hanging load
+  if (hanging) hanging.getWorldPosition(to);
+  const m = new THREE.Mesh(fireGeo, BOSS_MATS.fire);
+  const g1 = glowSprite('#ff7a1a', 2.4, 0.95), g2 = glowSprite('#ffd24a', 1.2, 0.9); m.add(g1, g2);
+  m.position.copy(from); scene.add(m);
+  const speed = 7 + (BOSS_HP - boss.hp) * 0.65;
+  fireballs.push({ m, glow: g1, v: to.sub(from).normalize().multiplyScalar(speed), back: false, life: 0 });
+  noise(0.35, 0.3, 700); tone(320, 0.45, 'square', 0.07, -220);
+}
+function bossHit() {
+  boss.hp--; boss.flash = 1; setBossPips();
+  const bar = $('bossBar'); bar.classList.remove('hit'); void bar.offsetWidth; bar.classList.add('hit');
+  sfx.crash(); tone(70, 0.5, 'sawtooth', 0.14, -30); shake = Math.max(shake, 0.28); slowMo(0.5);
+  if (combo > 0) comboT = COMBO_WINDOW;
+  if (boss.hp <= 0) { boss.phase = 'dead'; boss.dying = 0; showCombo(t('bossHit', BOSS_HP), ''); return; }
+  showCombo(t('bossHit', BOSS_HP - boss.hp), '');
+  boss.cd = 1.3;
+}
+function bossDefeated() {
+  bossDone = true;
+  const bonus = godUsed ? 0 : rollCoin(level).value * 40 * coinBoost();
+  if (bonus) { profile.coins += bonus; runCoins += bonus; saveProfile(); updateCoinsUi(); flyCoins(10); }
+  removeBoss();
+  showCombo(t('bossWin'), bonus ? t('bossWinSub', bonus) : '');
+  [0, 4, 7, 12, 16, 19, 24].forEach((st, i) => tone(392 * Math.pow(2, st / 12), 0.3, 'triangle', 0.1, 0, i * 0.08));
+  spawnTimer = Math.max(spawnTimer, 0.6);
+}
+function updateBoss(dt) {
+  if (!boss) return;
+  const b = boss, p = b.g.position;
+  b.t += dt;
+  b.lights.forEach((l, i) => { l.visible = Math.floor(b.t * 6 + i) % 3 !== 0; });
+  // face the camera, and the big eye follows the load
+  b.g.rotation.y = Math.atan2(camera.position.x - p.x, camera.position.z - p.z);
+  if (hanging) { hanging.getWorldPosition(V3); b.head.worldToLocal(V3); const d = V3.sub(b.pupil.position).normalize(); b.pupil.position.set(d.x * 0.25, 0.15 + d.y * 0.25, 1.82); b.eyeGlow.position.copy(b.pupil.position); }
+  if (b.flash > 0) { b.flash = Math.max(0, b.flash - dt * 3); BOSS_MATS.hull.emissive.setRGB(1, 1, 1).multiplyScalar(b.flash * 0.8); b.head.scale.setScalar(1 + b.flash * 0.12); }
+  if (b.phase === 'rise') {
+    const k = Math.min(1, b.t / 3.2), e = 1 - Math.pow(1 - k, 3);
+    p.y = (level - 26) + (b.base.y - (level - 26)) * e;
+    shake = Math.max(shake, 0.05 * (1 - k));
+    if (k >= 1) b.phase = 'fight';
+  } else if (b.phase === 'fight') {
+    p.y = b.base.y + Math.sin(b.t * 0.9) * 0.4;
+    b.body.rotation.z = Math.sin(b.t * 0.7) * 0.05;
+    if (!fireballs.length) {
+      b.cd -= dt;
+      if (b.cd <= 0) { // the eye glows red before each throw
+        b.charge += dt;
+        b.eyeGlow.material.opacity = Math.min(1, b.charge); b.eyeGlow.scale.setScalar(2.2 + b.charge * 3);
+        if (b.charge >= 1.2) { throwFireball(); b.charge = 0; b.cd = 99; b.eyeGlow.material.opacity = 0; }
+      }
+    }
+  } else if (b.phase === 'dead') { // explosion sequence
+    b.dying += dt;
+    p.y -= dt * (1 + b.dying * 3); b.body.rotation.z += dt * 0.8; b.body.rotation.x += dt * 0.4;
+    if (Math.floor(b.dying * 8) !== Math.floor((b.dying - dt) * 8)) {
+      const burst = glowSprite(['#ffffff', '#ffd24a', '#ff6a1a'][Math.floor(Math.random() * 3)], rand(5, 11), 1);
+      burst.position.set(p.x + rand(-5, 5), p.y + rand(-1.5, 3), p.z + rand(-2, 2)); scene.add(burst);
+      noise(0.25, 0.3, rand(300, 1200)); shake = Math.max(shake, 0.2);
+      const t0 = performance.now(); (function fade() { const k = (performance.now() - t0) / 500; burst.material.opacity = 1 - k; burst.scale.multiplyScalar(1.03); if (k < 1) requestAnimationFrame(fade); else scene.remove(burst); })();
+    }
+    if (b.dying > 2.2) { bossDefeated(); return; }
+  }
+  // fireballs
+  for (let i = fireballs.length - 1; i >= 0; i--) {
+    const f = fireballs[i], m = f.m.position;
+    f.life += dt;
+    f.glow.scale.setScalar(2.2 + Math.sin(f.life * 30) * 0.3);
+    if (f.back) {
+      const to = V3.set(0, 0.15, 1.2); b.head.localToWorld(to); to.sub(m);
+      const dist = to.length();
+      if (dist < 1.2) { scene.remove(f.m); fireballs.splice(i, 1); bossHit(); continue; }
+      f.v.copy(to.multiplyScalar(20 / dist));
+      m.addScaledVector(f.v, dt);
+      continue;
+    }
+    m.addScaledVector(f.v, dt);
+    // meets the load: a swing bats it back; a still load gets hit and burning debris scorches the top floor
+    if (hanging && spawnAnim >= 0.6) {
+      hanging.getWorldPosition(V3);
+      const touching = Math.abs(V3.x - m.x) < cur.w / 2 + 0.4 && Math.abs(V3.z - m.z) < cur.d / 2 + 0.4 && Math.abs(V3.y - m.y) < 1.0;
+      if (touching) {
+        if (settings.god || Math.hypot(bobV.x, bobV.y) > 1.4) { f.back = true; returnFireball(); continue; }
+        scene.remove(f.m); fireballs.splice(i, 1);
+        bobV.x += f.v.x * 0.35; bobV.y += f.v.z * 0.35;
+        cutRoof(f.v.x, f.v.z, 0.25, 0.4);
+        puffDust({ x: m.x, z: m.z, w: 0.8, d: 0.8 }, m.y, 10);
+        sfx.crash(); shake = Math.max(shake, 0.2); slowMo(0.3);
+        showCombo(t('bossMiss'), t('bossMissSub'));
+        b.cd = 1.4;
+        continue;
+      }
+    }
+    if (f.life > 8 || m.y < level - 6) { scene.remove(f.m); fireballs.splice(i, 1); b.cd = 1; } // dodged: it flies past
+  }
+}
+function returnFireball() { sfx.pop(); noise(0.15, 0.4, 260); slowMo(0.3); shake = Math.max(shake, 0.1); }
 function clearJuice() {
   combo = 0; comboT = 0; slowT = 0; endFever();
   Object.keys(boosts).forEach(k => { boosts[k] = 0; });
   removeBoostItem();
   intruders.forEach(it => scene.remove(it.g)); intruders.length = 0;
+  removeUfo(); orders.forEach(o => scene.remove(o.m)); orders.length = 0; nextUfoAt = 26;
+  removeBoss(); bossDone = false; BOSS_MATS.hull.emissive.setRGB(0, 0, 0);
   nextIntruderAt = 6 + Math.floor(rand(0, 3)); nextBoostAt = 4 + Math.floor(rand(0, 3));
   laserBeams.forEach(b => { b.visible = false; });
   $('streak').hidden = true; $('chips').innerHTML = '';
@@ -2040,7 +2390,7 @@ function clearJuice() {
 function updateJuice(dt) {
   const playing = state === 'playing';
   // streak timer
-  if (playing && combo > 0 && !falling && warpT < 0) {
+  if (playing && combo > 0 && !falling && warpT < 0 && !boss) {
     comboT -= dt;
     if (comboT <= 0) { if (combo >= 2) { showAlert(t('streakLost')); sfx.lost(); } combo = 0; }
   }
@@ -2071,6 +2421,8 @@ function updateJuice(dt) {
       if (Math.abs(V3.x - b.g.position.x) < cur.w / 2 + 0.3 && Math.abs(V3.z - b.g.position.z) < cur.d / 2 + 0.3 && Math.abs(V3.y - b.g.position.y) < 0.9) collectBoost();
     }
   }
+  updateUfo(dt);
+  updateBoss(dt);
   // intruders
   for (let i = intruders.length - 1; i >= 0; i--) {
     const it = intruders[i], p = it.g.position;
@@ -2176,8 +2528,11 @@ function land() {
   awardCoins(perfect);
   if (level % 10 === 0) stampFloor(level);
   if (boostItem && --boostItem.left <= 0) removeBoostItem();
-  if (!boostItem && level >= nextBoostAt) { spawnBoost(); nextBoostAt = level + 7 + Math.floor(rand(0, 5)); }
-  if (level >= nextIntruderAt && !intruders.some(it => !it.dead) && level < DIM_LV + 200) { spawnIntruder(); nextIntruderAt = level + 4 + Math.floor(rand(0, 4)); }
+  if (!boostItem && !boss && level >= nextBoostAt) { spawnBoost(); nextBoostAt = level + 7 + Math.floor(rand(0, 5)); }
+  if (level >= BOSS_LV && !bossDone && !boss) startBoss();
+  else if (boss) { /* nothing else spawns during the boss */ }
+  else if (level >= nextUfoAt && !ufo) { spawnUfo(); nextUfoAt = level + 10 + Math.floor(rand(0, 5)); nextIntruderAt = Math.max(nextIntruderAt, level + 3); }
+  else if (level >= nextIntruderAt && !intruders.some(it => !it.dead) && level < DIM_LV + 200) { spawnIntruder(); nextIntruderAt = level + 4 + Math.floor(rand(0, 4)); }
   const cap = capSize(level);
   cur = { w: Math.min(top.w, cap), d: Math.min(top.d, cap) };
   spawnTimer = 0.32;
@@ -2266,7 +2621,7 @@ function updateCoinsUi() {
   $('coinNum').textContent = profile.coins; $('titleCoins').textContent = profile.coins; $('shopCoins').textContent = profile.coins;
 }
 function gameOver() {
-  state = 'over'; combo = 0; endFever(); $('streak').hidden = true; $('chips').innerHTML = '';
+  state = 'over'; combo = 0; endFever(); $('bossBar').hidden = true; $('streak').hidden = true; $('chips').innerHTML = '';
   overT = 0; viewing = false; orbitYaw = 0; viewZoom = 1; viewY = level * 0.5 + 1.5;
   sfx.over();
   knockWorker();
@@ -2710,7 +3065,7 @@ if (AppPlugin) {
 }
 window.addEventListener('blur', () => keys.clear());
 window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  camera.aspect = innerWidth / innerHeight; camera.fov = baseFov(); camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
 
@@ -3010,7 +3365,7 @@ function update(dt) {
   marker.userData.arrow.rotation.y += dt * 2;
 
   // ---- camera
-  const a = camera.aspect, fit = a >= 1 ? 1 : 1 + (1 - a) * 1.3;
+  const a = camera.aspect, fit = a >= 1 ? 1 : a >= 0.8 ? 1 + (1 - a) * 1.3 : 1 + (1 - a) * 0.95;
   let rate = 3;
   if (state === 'title' && shopOpen) { // close-up of the worker, leaving room for the shop panel
     const w = worker.root.position;
@@ -3043,7 +3398,8 @@ function update(dt) {
       tY = viewing ? viewY : level * 0.5 + 1.5; tD = Math.max(17, level * 1.2 + 12) * fit * (viewing ? viewZoom : 1); tE = 0.3;
     }
     else if (state === 'board') { tY = liftY + 2; tD = 14 * fit; tE = 0.4; }
-    else { tY = level + 2; tD = 16 * fit; tE = 0.55; }
+    else { tY = level + 2 + (a < 0.8 ? 0.7 : 0); tD = 16 * fit; tE = a < 0.8 ? 0.5 : 0.55; } // portrait: a little more sky above the load
+    if (boss && state !== 'over') { tY += 2.6; tD *= 1.3; tE = 0.3; }
     const following = state === 'over' && worker.fall && !viewing && overT < 3.2;
     const kc = ease(state === 'over' ? (viewing ? 4 : 1.1) : 3.2);
     if (!following) { camFocusY += (tY - camFocusY) * kc; camDist += (tD - camDist) * kc; camElev += (tE - camElev) * kc; }
@@ -3065,11 +3421,11 @@ function update(dt) {
   if (warpT >= 0) { // passing through the portal
     warpT += dt;
     const p = warpT / 2.6, bell = Math.sin(Math.min(1, p) * Math.PI);
-    camera.fov = 48 + bell * (REDUCED ? 10 : 42); camera.updateProjectionMatrix();
+    camera.fov = baseFov() + bell * (REDUCED ? 10 : 42); camera.updateProjectionMatrix();
     warpLines.visible = true; warpLines.material.opacity = bell;
     warpLines.position.set(camera.position.x, camera.position.y + 70 - ((warpT * 160) % 140), camera.position.z);
     $('flash').style.opacity = smooth(0.3, 0.48, p) * (1 - smooth(0.55, 0.95, p));
-    if (p >= 1) { warpT = -1; camera.fov = 48; camera.updateProjectionMatrix(); warpLines.visible = false; $('flash').style.opacity = 0; }
+    if (p >= 1) { warpT = -1; camera.fov = baseFov(); camera.updateProjectionMatrix(); warpLines.visible = false; $('flash').style.opacity = 0; }
   }
 
   // ---- environment by altitude
@@ -3126,6 +3482,7 @@ applyLang();
   const warm = new THREE.Group();
   warm.add(new THREE.Mesh(coinGeo, coinMatPool[0]), new THREE.Mesh(gemGeo, coinMatPool[1]), new THREE.Mesh(ringGeo, ringMatPool[0]));
   Object.values(BOOST_MATS).forEach(m => warm.add(new THREE.Mesh(boostGeo, m)));
+  warm.add(makeUfo().g, new THREE.Mesh(orderGeo, orderMat), makeBoss().g, new THREE.Mesh(fireGeo, BOSS_MATS.fire));
   laserBeams.forEach(b => { b.visible = true; }); dust.forEach(d => { d.sp.visible = true; });
   scene.add(warm);
   try { renderer.compile(scene, camera); } catch (e) { /* compiling ahead is only an optimisation */ }

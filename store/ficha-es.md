@@ -30,6 +30,9 @@ Encadena perfectos antes de que se vacíe el medidor de racha. Con 6 seguidos la
 🐦 INTRUSOS EN LA OBRA
 Palomas, drones, chatarra espacial y meteoritos se cruzan con tu carga. Balancea la grúa y golpéalos con el bloque para mandarlos a volar y llevarte monedas extra. Si te pillan quieto, te descolocan la carga.
 
+👽 EL INSPECTOR ALIENÍGENA Y SU JEFE
+Al salir de la Tierra, un platillo volante te dispara órdenes de demolición: devuélveselas con la carga para derribarlo. Y en la planta 50, el Supervisor Supremo surge por detrás de la Tierra lanzando bolas de fuego. Golpéalas balanceando la grúa y devuélvele 6 para seguir construyendo.
+
 🧰 HERRAMIENTAS
 Pasa el bloque por las cajas flotantes: nivel láser, contrapeso, paga doble y refuerzo.
 

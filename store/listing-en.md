@@ -30,6 +30,9 @@ Chain perfect drops before the streak meter runs out. Hit 6 in a row and the tow
 🐦 INTRUDERS ON SITE
 Pigeons, drones, space junk and meteorites cross paths with your load. Swing the crane and whack them with the block to send them flying and earn bonus coins. Catch them standing still and they'll knock your load off course.
 
+👽 THE ALIEN INSPECTOR AND ITS BOSS
+Once you leave Earth, a flying saucer fires demolition orders at you: bat them back with your load to bring it down. And at floor 50, the Supreme Supervisor rises from behind the Earth hurling fireballs. Swing the crane into them and send 6 back to keep building.
+
 🧰 TOOLS
 Swing your block through the floating crates: laser level, counterweight, double pay and rebar.
 
