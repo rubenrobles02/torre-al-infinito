@@ -30,8 +30,11 @@ Encadena perfectos antes de que se vacíe el medidor de racha. Con 6 seguidos la
 🐦 INTRUSOS EN LA OBRA
 Palomas, drones, chatarra espacial y meteoritos se cruzan con tu carga. Balancea la grúa y golpéalos con el bloque para mandarlos a volar y llevarte monedas extra. Si te pillan quieto, te descolocan la carga.
 
-👽 EL INSPECTOR ALIENÍGENA Y SU JEFE
-Al salir de la Tierra, un platillo volante te dispara órdenes de demolición: devuélveselas con la carga para derribarlo. Y en la planta 50, el Supervisor Supremo surge por detrás de la Tierra lanzando bolas de fuego. Golpéalas balanceando la grúa y devuélvele 6 para seguir construyendo.
+👽 ENEMIGOS Y TRES JEFES
+Ratas, termitas robot y bichos glitch se comen el tejado: aplástalos con la siguiente planta. Inspectores alienígenas te disparan órdenes de demolición: devuélveselas con la carga.
+• Planta 50, el Supervisor Supremo: golpea sus bolas de fuego balanceando la grúa.
+• Planta 100, el Gusano Devoraestrellas: suéltale la pieza en la cabeza cuando muerda el tejado.
+• Planta 150, el Arquitecto del Vacío: lleva la carga a sus núcleos antes de que estallen.
 
 🧰 HERRAMIENTAS
 Pasa el bloque por las cajas flotantes: nivel láser, contrapeso, paga doble y refuerzo.

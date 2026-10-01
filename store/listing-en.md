@@ -30,8 +30,11 @@ Chain perfect drops before the streak meter runs out. Hit 6 in a row and the tow
 🐦 INTRUDERS ON SITE
 Pigeons, drones, space junk and meteorites cross paths with your load. Swing the crane and whack them with the block to send them flying and earn bonus coins. Catch them standing still and they'll knock your load off course.
 
-👽 THE ALIEN INSPECTOR AND ITS BOSS
-Once you leave Earth, a flying saucer fires demolition orders at you: bat them back with your load to bring it down. And at floor 50, the Supreme Supervisor rises from behind the Earth hurling fireballs. Swing the crane into them and send 6 back to keep building.
+👽 ENEMIES AND THREE BOSSES
+Rats, robot termites and glitch bugs eat your roof: squash them with the next floor. Alien inspectors fire demolition orders: bat them back with your load.
+• Floor 50, the Supreme Supervisor: swing the crane into its fireballs.
+• Floor 100, the Star-Eater Worm: drop the piece on its head while it bites the roof.
+• Floor 150, the Void Architect: swing your load into its cores before they blow.
 
 🧰 TOOLS
 Swing your block through the floating crates: laser level, counterweight, double pay and rebar.
